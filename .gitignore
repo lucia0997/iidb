@@ -1,0 +1,16 @@
+node_modules/
+packages/*/node_modules/
+packages/*/dist/
+
+package-lock.json
+**/package-lock.json
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+
+npm-debug.log*
+
+**/dist/
+**/tsconfig.tsbuildinfo
