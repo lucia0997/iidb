@@ -1,0 +1,40 @@
+{
+  "name": "template",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write .",
+    "type-check": "tsc -b",
+    "ckeck": "npm run lint && npm run format && npm run type-check",
+    "ci": "npm run check && npm run build"
+  },
+  "dependencies": {
+    "@airbus/components-react": "^3.1.0",
+    "@airbus/icons": "^3.0.3",
+    "@df/ui": "file:../../../df-react-lib/data-factory---react-components/builds/df-ui/df-ui-0.0.0.tgz",
+    "@df/utils": "file:../../../df-react-lib/data-factory---react-components/builds/df-utils/df-utils-0.0.0.tgz",
+    "@tanstack/react-query": "^5.83.0",
+    "axios": "^1.11.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.7.0",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^6.3.1",
+    "@typescript-eslint/parser": "^6.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.10"
+  }
+}

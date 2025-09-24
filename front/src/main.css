@@ -1,0 +1,19 @@
+.centeredFlex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.blueBackground {
+  background: #00205b;
+}
+
+.fullscreen {
+  width: 100%;
+  height: calc(100vh - 56px);
+}
+
+.roundedCorners {
+  border-radius: 0.25em;
+}

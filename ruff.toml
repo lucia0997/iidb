@@ -1,0 +1,33 @@
+# Python format and style
+line-length = 119 # Github Code Review Standard
+indent-width = 4
+target-version = "py311"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[lint]
+select = ["E", "F", "I", "UP", "C", "B", "W"]
+ignore = [
+    "ARG002",  # Unused function argument
+    "E501",    # Line too long (handled by formatter)
+    "INP001",  # File not part of an implicit namespace package
+    "SLF001",  # Accessing private/protected class attributes
+    "T201",    # Use of print statements (allowed in dev/debug)
+]
+
+exclude = [
+    "migrations",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__"
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+
+

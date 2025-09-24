@@ -1,0 +1,19 @@
+.loginContainer {
+  padding: 3em 1em;
+  gap: 1em;
+  background: white;
+}
+
+.loginLogo {
+  width: 30em;
+}
+
+.loginInputs {
+  width: 20em;
+}
+
+.loginButton {
+  display: flex;
+  justify-content: center;
+  padding-top: 2em;
+}

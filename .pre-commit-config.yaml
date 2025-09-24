@@ -1,0 +1,48 @@
+# Pre-commit hooks with local binaries
+# To use:
+#
+#     pip install pre-commit
+#     pre-commit run --all-files    
+#
+# Or:
+#
+#     pre-commit install  # (runs every time you commit in git)
+#
+# To update this file:
+#
+#     pre-commit autoupdate
+
+repos: 
+  - repo: local
+    hooks: 
+      # Ruff: lint & python format
+      - id: ruff
+        name: Ruff lint+format
+        entry: ruff
+        args: ["--fix"]
+        language: system
+        files: ".*\.py$"
+
+      # ESLint: JS, JSX, TS, TSX
+      - id: eslint
+        name: ESLint frontend
+        entry: "frontend/node_modules/.bin/eslint"
+        args: ["--ext", ".ts,.tsx,.js,.jsx", "--fix"]
+        language: system
+        files: "^frontend/.*\.(js|jsx|ts|tsx)$"
+
+      # Prettier: front & configs
+      - id: prettier
+        name: Prettier
+        entry: "frontend/node_modules/.bin/prettier"
+        args: ["--write"]
+        language: system
+        files: "^frontend/.*\.(ts|tsx|js|jsx|json|css|scss|md|yaml|yml)$"
+
+      # Merge conflict markers detection
+      - id: merge-conflict
+        name: Check merge conflicts
+        entry: |
+          sh -c '\"grep -R -n "<<<<<<<" / \"$PWD\" || findstr "/spin" "<<<<<<<" .\"'
+        language: system
+        files: ".*"
