@@ -138,7 +138,7 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": (
-        "apps.core.exception_handlers.exception_handler"
+        "apps.core.handlers.exception_handler"
     ),
     "NON_FILED_ERROR_KEY": (
         "non_field_errors"

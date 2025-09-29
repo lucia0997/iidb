@@ -10,7 +10,7 @@ import AppRoutes from './router/AppRoutes';
 
 // Client instances
 const queryClient = new QueryClient();
-const axiosClient = new AxiosHttpClient({ baseURL: import.meta.env.API_URL ?? '/api' });
+const axiosClient = new AxiosHttpClient({ baseURL: import.meta.env.VITE_API_URL ?? '/api' });
 
 export default function App() {
   return (

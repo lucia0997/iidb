@@ -19,7 +19,7 @@ function UserPage() {
     <>
       <Divider />
       <Button onClick={() => logout()}>Logout</Button>
-      <Button onClick={() => post('api/user/')}>Create my user</Button>
+      <Button onClick={() => post('api/users/')}>Create my user</Button>
     </>
   );
 }
