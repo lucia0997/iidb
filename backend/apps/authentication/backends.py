@@ -37,9 +37,10 @@ class LDAPAuthenticationBackend(ModelBackend):
             except Exception as e:
                 return None
 
-        # Authenticate against LDAP 
-        if not ldap_service.authenticate_user(username, password):
-            return None
+        # Authenticate against LDAP
+        if not settings.BYPASS_MODE:
+            if not ldap_service.authenticate_user(username, password):
+                return None
         
         # Fetch local active user
         try:
