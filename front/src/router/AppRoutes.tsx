@@ -1,8 +1,8 @@
 import { lazy } from 'react';
 import { Routes, Route, Navigate, createBrowserRouter } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
-import { AppRouter } from '@df/utils';
-import { HomeScreen, Page403, Page404 } from '@df/ui';
+import { AppRouter, ProtectedRoute } from '@df/utils';
+import { Page403, Page404 } from '@df/ui';
 import { LoginPage } from '../pages/LoginPage';
 import { routeConfig } from './routeConfig';
 import { UserPage } from '../pages/UserPage';
@@ -18,7 +18,14 @@ export default function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route element={<AppLayout />}>
         <Route path="/user" element={<UserPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute permissions={['users.edit_users']}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/403" element={<Page403 />} />
         <Route path="/404" element={<Page404 />} />
         <Route path="*" element={<AppRouter structure={routeConfig} />} />

@@ -37,12 +37,10 @@ class LDAPAuthenticationBackend(ModelBackend):
             except Exception as e:
                 return None
 
-        # Check if LDAP is bypassed
-        if getattr(settings, 'LDAP_BYPASS', False):
-            # Authenticate against LDAP 
-            if not ldap_service.authenticate_user(username, password):
-                return None
-            
+        # Authenticate against LDAP 
+        if not ldap_service.authenticate_user(username, password):
+            return None
+        
         # Fetch local active user
         try:
             user = User.objects.get(username=username)
