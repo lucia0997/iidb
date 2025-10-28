@@ -6,14 +6,14 @@ import { Page403, Page404 } from '@df/ui';
 import { LoginPage } from '../pages/LoginPage';
 import { routeConfig } from './routeConfig';
 import { UserPage } from '../pages/UserPage';
-import Tecnology from '../pages/Tecnology/Tecnology';
-import IndustrialDB from '../pages/IndustrialDB/IndustrialDB';
-import Project from '../pages/Project/Project';
 
 //Lazy-load de páginas
 const Login = lazy(() => import('../pages/LoginPage/LoginPage'));
 const User = lazy(() => import('../pages/UserPage/UserPage'));
 const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'));
+const Tecnology = lazy(() => import('../pages/Tecnology/Tecnology'));
+const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'))
+const Project = lazy(() => import('../pages/Project/Project'))
 
 export default function AppRoutes() {
   return (
