@@ -60,3 +60,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Others
+__DOCS__/*

@@ -1,0 +1,8 @@
+{
+    "template": "Vorlage",
+    "invalid_credentials": "Ungültige Anmeldeinformationen.",
+    "unable_login": "Anmeldung nicht möglich. Bitte versuchen Sie es erneut.",
+    "usernama": "Benutzername",
+    "password": "Passwort",
+    "login": "Login"
+}

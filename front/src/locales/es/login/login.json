@@ -1,0 +1,8 @@
+{
+    "template": "Plantilla",
+    "invalid_credentials": "Credenciales inválidas.",
+    "unable_login": "No se puede iniciar sesión. Inténtalo de nuevo.",
+    "usernama": "Usuario",
+    "password": "Constraseña",
+    "login": "Login"
+}

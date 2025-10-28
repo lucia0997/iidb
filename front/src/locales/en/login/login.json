@@ -1,0 +1,8 @@
+{
+    "template": "Template",
+    "invalid_credentials": "Invalid credentials.",
+    "unable_login": "Unable to login. Please, try again.",
+    "usernama": "Username",
+    "password": "Password",
+    "login": "Login"
+}

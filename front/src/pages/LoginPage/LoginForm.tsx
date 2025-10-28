@@ -3,6 +3,7 @@ import { Visibility, VisibilityOff } from '@airbus/icons/react';
 import { LoginPayload, useAuth } from '@df/utils';
 import { useEffect, useState } from 'react';
 import './login.css';
+import { useTranslation } from 'react-i18next';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -10,6 +11,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const { status, login } = useAuth();
+  const { t } = useTranslation('login')
 
   const [form, setForm] = useState<LoginPayload>({
     username: '',
@@ -39,8 +41,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     } catch (error: any) {
       const errorMessage =
         error.response.status === 401
-          ? 'Invalid credentials.'
-          : 'Unable to login. Please, try again.';
+          ? t('invalid_credentials')
+          : t('unable_login');
       setErrors(errorMessage);
     } finally {
       setLoading(false);
@@ -51,7 +53,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   return (
     <form className="loginForm" onSubmit={handleLogin}>
-      <FormControl label="Username" required>
+      <FormControl label={t('username')} required>
         <Input
           className={'loginInputs'}
           value={form.username}
@@ -60,7 +62,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           }
         />
       </FormControl>
-      <FormControl label="Password" error={!!errors} errorText={errors ?? ''} required>
+      <FormControl label={t('password')} error={!!errors} errorText={errors ?? ''} required>
         <Input
           className={'loginInputs'}
           value={form.password}
@@ -77,7 +79,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       </FormControl>
       <div className={'loginButton'}>
         <Button type="submit" variant="primary" disabled={disabledLogin} onClick={handleLogin}>
-          {loading ? <Spinner size="small" layout="inline" /> : 'Login'}
+          {loading ? <Spinner size="small" layout="inline" /> : t('login')}
         </Button>
       </div>
     </form>

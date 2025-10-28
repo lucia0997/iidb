@@ -10,7 +10,7 @@ import { UserPage } from '../pages/UserPage';
 //Lazy-load de páginas
 const Login = lazy(() => import('../pages/LoginPage/LoginPage'));
 const User = lazy(() => import('../pages/UserPage/UserPage'));
-const AdminPage = lazy(() => import('../pages/UserPage/UserPage'));
+const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'));
 
 export default function AppRoutes() {
   return (

@@ -1,0 +1,21 @@
+{
+    "username": "Nom d'utilisateur",
+    "fullname": "Nom et prénom",
+    "email": "E-mail",
+    "groups": "Groupes",
+    "active": "Actif",
+    "actions": "Actes",
+    "inactive": "Inactive",
+    "management": "Gestion des utilisateurs",
+    "createUser": "Créer un utilisateur",
+    "edit": "Modifier",
+    "editUser": "Modifier l'utilisateur",
+    "delete": "Supprimer",
+    "deleteUser": "Supprimer un utilisateur",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "user": "Utilisatrice",
+    "changeStatus": "va être changé en inactif.",
+    "create_success": "créé avec succès",
+    "edit_success": "édité avec succès"
+}

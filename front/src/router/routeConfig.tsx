@@ -86,21 +86,11 @@ export const routeConfig: RootRouteNode[] = [
       },
     ],
   },
-  {
+   {
     kind: 'page',
-    key: 'ex1',
-    path: '/ex1',
-    element: <UserPage />,
-    tabName: 'ex1',
-    children: [
-      {
-        kind: 'page',
-        key: 'ex2',
-        path: '/ex2',
-        element: <AdminPage />,
-        tabName: 'ex2',
-        requiredPermissions: ['a'],
-      },
-    ],
+    key: 'adminPanel',
+    path: '/admin',
+    element: <AdminPage />,
+    tabName: 'Admin Panel',
   },
 ];

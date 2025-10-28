@@ -9,8 +9,23 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'material-react-table',
+      '@tanstack/react-table',
+      '@tanstack/react-virtual',
+      '@airbus/components-react',
+    ],
+    force: true,
+    esbuildOptions: { preserveSymlinks: true },
   },
   server: {
     port: 1234,

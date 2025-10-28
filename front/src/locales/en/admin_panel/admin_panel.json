@@ -1,0 +1,21 @@
+{
+    "username": "Username",
+    "fullname": "Full name",
+    "email": "Email",
+    "groups": "Groups",
+    "active": "Active",
+    "actions": "Actions",
+    "inactive": "Inactive",
+    "management": "Users Management",
+    "createUser": "Create User",
+    "edit": "Edit",
+    "editUser": "Edit User",
+    "delete": "Delete",
+    "deleteUser": "Delete User",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "user": "User",
+    "changeStatus": "is going to be changed to inactive.",
+    "create_success": "created successfully",
+    "edit_success": "edited successfully"
+}
