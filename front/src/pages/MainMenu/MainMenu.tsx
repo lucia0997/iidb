@@ -1,8 +1,9 @@
-import { Button, Typography } from '@airbus/components-react';
+import { Typography } from '@airbus/components-react';
 import './mainmenu.css';
-import { Image } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+import { FC } from 'react';
 
-function MainMenu() {
+const MainMenu: FC = () => {
   return (
     <div className="mainMenuContainer">
       <div className="titleContainer">
@@ -10,12 +11,18 @@ function MainMenu() {
         <img src="/images/logos/AIRBUS_Blue.png" className="logo" />
       </div>
       <div className="buttonsContainer">
-        <Button className="button road">Technology Roadmapping</Button>
-        <Button className="button database">Industrial DataBase Mapping</Button>
-        <Button className="button project">Project Roadmapping</Button>
+        <Link to="/tecnology-roadmappping" className="button road">
+          Technology Roadmapping
+        </Link>
+        <Link to="industrial-database" className="button database">
+          Industrial DataBase Mapping
+        </Link>
+        <Link to="project-roadmapping" className="button project">
+          Project Roadmapping
+        </Link>
       </div>
     </div>
   );
-};
+}
 
 export default MainMenu;

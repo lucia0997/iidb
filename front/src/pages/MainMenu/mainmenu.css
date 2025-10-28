@@ -17,6 +17,10 @@
   height: 150px;
 }
 
+.mainMenuLink {
+  text-decoration: none;
+}
+
 .buttonsContainer {
   grid-column: span 1;
   display: flex;
@@ -45,6 +49,7 @@
   cursor: pointer;
   padding: 20px;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .road {
