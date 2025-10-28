@@ -2,7 +2,7 @@ import { Button, Typography } from '@airbus/components-react';
 import './mainmenu.css';
 import { Image } from '@mui/icons-material';
 
-const MainMenu = () => {
+function MainMenu() {
   return (
     <div className="mainMenuContainer">
       <div className="titleContainer">
