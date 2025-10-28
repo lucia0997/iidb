@@ -16,6 +16,7 @@ env =  environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 ROOT_PATH = env("ROOT_PATH")
+LDAP_BYPASS = env("LDAP_BYPASS")
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = ROOT_PATH + "media/"
