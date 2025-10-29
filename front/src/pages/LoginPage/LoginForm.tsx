@@ -78,7 +78,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         />
       </FormControl>
       <div className={'loginButton'}>
-        <Button type="submit" variant="primary" disabled={disabledLogin} onClick={handleLogin}>
+        <Button type="submit" variant="primary" onClick={handleLogin}>
           {loading ? <Spinner size="small" layout="inline" /> : t('login')}
         </Button>
       </div>

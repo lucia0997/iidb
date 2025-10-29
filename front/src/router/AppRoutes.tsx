@@ -11,18 +11,24 @@ import { UserPage } from '../pages/UserPage';
 const Login = lazy(() => import('../pages/LoginPage/LoginPage'));
 const User = lazy(() => import('../pages/UserPage/UserPage'));
 const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'));
-const Tecnology = lazy(() => import('../pages/Tecnology/Tecnology'));
-const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'))
-const Project = lazy(() => import('../pages/Project/Project'))
+const Technology = lazy(() => import('../pages/Technology/Technology'));
+const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'));
+const Project = lazy(() => import('../pages/Project/Project'));
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route element={<AppLayout />}>
-      <Route path='/tecnology-roadmappping' element={<Tecnology />} />
-      <Route path='/industrial-database' element={<IndustrialDB />} />
-      <Route path='/project-roadmapping' element={<Project />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/technology-roadmappping" element={<Technology />} />
+        <Route path="/industrial-database" element={<IndustrialDB />} />
+        <Route path="/project-roadmapping" element={<Project />} />
         <Route
           path="/admin"
           element={

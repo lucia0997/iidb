@@ -11,7 +11,7 @@ const MainMenu: FC = () => {
         <img src="/images/logos/AIRBUS_Blue.png" className="logo" />
       </div>
       <div className="buttonsContainer">
-        <Link to="/tecnology-roadmappping" className="button road">
+        <Link to="/technology-roadmappping" className="button road">
           Technology Roadmapping
         </Link>
         <Link to="industrial-database" className="button database">
