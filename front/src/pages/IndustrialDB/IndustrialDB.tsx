@@ -63,6 +63,22 @@ const IndustrialDB = () => {
           value={selectedColumns}
           onChange={setSelectedColumns}
         />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
         {/* <FacetCard
           title="Plants/Programmes"
           options={options.plant_or_programme}

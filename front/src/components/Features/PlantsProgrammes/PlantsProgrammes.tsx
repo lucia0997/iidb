@@ -8,7 +8,7 @@ const PlantsProgrammes = ({
     onChange,
     disabled,
     title = 'Plants/Programmes',
-    subtitle = 'Select the columns to display'
+    // subtitle = 'Select the columns to display'
 }: PlantsProgrammesProps) => {
 
     const { data, isLoading, isError } = useProgrammeOptions();
@@ -21,7 +21,7 @@ const PlantsProgrammes = ({
   return (
     <FacetCard 
         title={title}
-        subtitle={isLoading ? 'Loading...' : (isError ? 'Could not load options' : subtitle)}
+        // subtitle={isLoading ? 'Loading...' : (isError ? 'Could not load options' : subtitle)}
         options={options}
         value={value}
         onChange={onChange}
