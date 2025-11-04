@@ -77,7 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",      # request.user functionality
     "django.contrib.messages.middleware.MessageMiddleware",         # Flash message storage
     "django.middleware.clickjacking.XFrameOptionsMiddleware",       # Click-jacking header
-    "django.middleware.locale.LocalMiddleware",                     # Languages
+    "django.middleware.locale.LocaleMiddleware",                     # Languages
     "apps.core.middleware.RequestIDMiddleware",                     # RequestID & X-Request-ID header
 ]
 

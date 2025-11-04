@@ -1,9 +1,9 @@
 import { Typography } from '@airbus/components-react';
 
 import './technology.css';
-import FilterCard from '../../components/FilterCard/FilterCard';
+import FilterCard from '../../components/CustomComponents/FilterCard/FilterCard';
 import { useCallback, useState } from 'react';
-import { Option } from '../../components/FilterCard/FilterCard.types';
+import { Option } from '../../components/CustomComponents/FilterCard/FilterCard.types';
 import { useApiClient } from '@df/utils';
 
 const plantas = ['Getafe', 'Tablada']
