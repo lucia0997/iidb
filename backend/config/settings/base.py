@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "apps.authentication",              # Authentication 
     "apps.authorization",               # Authorization
     "apps.users",                       # User Management
+    "apps.iidb",                        # Project Innovation Industrial DB 
 ]
 
 # ___________________________ MIDDLEWARE ___________________________
@@ -76,7 +77,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",      # request.user functionality
     "django.contrib.messages.middleware.MessageMiddleware",         # Flash message storage
     "django.middleware.clickjacking.XFrameOptionsMiddleware",       # Click-jacking header
-    "apps.core.middleware.RequestIDMiddleware",                         # RequestID & X-Request-ID header
+    "django.middleware.locale.LocalMiddleware",                     # Languages
+    "apps.core.middleware.RequestIDMiddleware",                     # RequestID & X-Request-ID header
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -136,13 +138,24 @@ TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_TZ = True
 
+LANGUAGES = [
+    ("en", "English"),
+    ("es", "Spanish"),
+    ("de", "German"),
+    ("fr", "French")
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
 # ___________________________ DRF ___________________________
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": (
         "apps.core.handlers.exception_handler"
     ),
-    "NON_FILED_ERROR_KEY": (
+    "NON_FIELD_ERROR_KEY": (
         "non_field_errors"
     ),
     "DEFAULT_RENDERER_CLASSES": (
@@ -151,6 +164,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.StandardResultsSetPagination",
