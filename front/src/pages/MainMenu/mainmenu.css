@@ -1,0 +1,89 @@
+.mainMenuContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+  margin: 20px;
+}
+
+.titleContainer {
+  text-align: center;
+  grid-column: span 2;
+  padding: 150px;
+}
+
+.logo {
+  padding-top: 40px;
+  height: 150px;
+}
+
+.mainMenuLink {
+  text-decoration: none;
+}
+
+.buttonsContainer {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.buttonsContainer .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  width: 80%;
+  max-width: 400px;
+  min-height: 70px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 4px;
+  border-width: 2px;
+  border-style: solid;
+  cursor: pointer;
+  padding: 20px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.road {
+  background-color: #ff8000;
+  color: white;
+  border-color: #d84b20;
+}
+
+.road:hover {
+  background-color: #ffa64d;
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.database {
+  background-color: #ff0000;
+  color: white;
+  border-color: #990000;
+}
+
+.database:hover {
+  background-color: #ff4d4d;
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.project {
+  background-color: #00913f;
+  color: white;
+  border-color: #005726;
+}
+
+.project:hover {
+  background-color: #33b568;
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
