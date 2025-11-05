@@ -17,5 +17,5 @@ class PlantProgrammeViewSet(ColumnsMixin, viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["business", "site"]
-    search_fields = ["technology_name", "business", "site"]
+    search_fields = ["technology_name", "program", "business", "site"]
     ordering_fields = ["technology_name", "business", "site"]
