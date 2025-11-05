@@ -1,14 +1,11 @@
 import { Box } from '@mui/material';
-import { FacetCard, FacetOption } from '../../components/CustomComponents/FacetCard';
 import { Button, Typography } from '@airbus/components-react';
 import { useCallback, useMemo, useState } from 'react';
 import PlantsProgrammes from '../../components/Features/PlantsProgrammes/PlantsProgrammes';
 import { useNavigate } from 'react-router-dom';
 import './industrialDB.css';
+import { FacetKey, FacetState } from './IndustrialDB.types';
 
-type FacetKey = 'plants_programme' | 'technologies' | 'strategy' | 'projects' | 'processes';
-
-type FacetState = Record<FacetKey, string[]>;
 
 const ROOT = import.meta.env.VITE_ROOT_PATH ?? '';
 
