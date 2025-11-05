@@ -7,8 +7,6 @@ import './selectedColumnsPage.css'
 
 type Row = Record<string, unknown>;
 
-const API_URL = import.meta.env.VITE_API_URL ?? '/api';
-
 const SelectedColumnsPage = () => {
     const location = useLocation();
     const [searchParams] = useSearchParams();
@@ -33,7 +31,7 @@ const SelectedColumnsPage = () => {
             setLoading(true);
             setError(null);
             try {
-                const { data } = await api.get(`${API_URL}/plants-programmes/rows/`, {
+                const { data } = await api.get(`/plants-programmes/rows/`, {
                     params: { columns: columns.join(','), page_size: 200},
                 });
                 const results = Array.isArray(data) ? data : data.results ?? [];

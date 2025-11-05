@@ -87,7 +87,7 @@ class ColumnsMixin:
         except Exception:
             pass
         
-        qs_values = qs_values(*requested)
+        qs_values = qs.values(*requested)
         
         #7) Standard DRF pagination in custom actions
         page = self.paginate_queryset(qs_values)
