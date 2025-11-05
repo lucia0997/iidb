@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-04 12:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: backend/apps/iidb/models/plant_programme.py:5
+#: backend/apps/iidb/serializers/plant_programme.py:7
+msgid "Technology Name"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:6
+#: backend/apps/iidb/serializers/plant_programme.py:10
+msgid "Program"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:6
+#: backend/apps/iidb/serializers/plant_programme.py:11
+msgid "List of technology-related programs"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:7
+#: backend/apps/iidb/serializers/plant_programme.py:13
+msgid "Business"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:8
+#: backend/apps/iidb/serializers/plant_programme.py:14
+msgid "Site"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:12
+msgid "Plant Programme"
+msgstr ""
+
+#: backend/apps/iidb/models/plant_programme.py:13
+msgid "Plants Programmes"
+msgstr ""
+
+#: backend/apps/iidb/serializers/plant_programme.py:23
+msgid "Program must be a list of strings."
+msgstr ""

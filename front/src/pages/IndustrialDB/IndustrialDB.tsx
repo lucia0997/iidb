@@ -1,7 +1,8 @@
 import { Box } from "@mui/material";
-import { FacetCard, FacetOption } from "../../components/FacetCard";
+import { FacetCard, FacetOption } from "../../components/CustomComponents/FacetCard";
 import { Typography } from "@airbus/components-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import PlantsProgrammes from "../../components/Features/PlantsProgrammes/PlantsProgrammes";
 
 type FacetKey =
   | 'plant_or_programme'
@@ -13,29 +14,35 @@ type FacetKey =
 type FacetState = Record<FacetKey, string[]>;
 
 const IndustrialDB = () => {
-   // estado de seleccionados
-   const [filters, setFilters] = useState<FacetState>({
-    plant_or_programme: [],
-    plant_location: [],
-    programme: [],
-    status: [],
-    owner: [],
-  });
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    'technology_name',
+    'program'
+  ])
 
-  // datos FAKE (persisten sólo en memoria)
-  const options: Record<FacetKey, FacetOption[]> = {
-    plant_or_programme: [
-      'Plants/Programmes', 'Plant Location A', 'Plant Location B', 'Programme Alpha', 'Programme Beta',
-    ].map((l, i) => ({ id: `pp-${i}`, label: l })),
-    plant_location: ['Getafe', 'Tablada', 'Illescas', 'Puerto Real', 'Sevilla']
-      .map((l, i) => ({ id: `pl-${i}`, label: l })),
-    programme: ['A320', 'A330', 'A350', 'A380']
-      .map((l, i) => ({ id: `pr-${i}`, label: l })),
-    status: ['Active', 'Paused', 'Archived']
-      .map((l, i) => ({ id: `st-${i}`, label: l })),
-    owner: ['Team Alpha', 'Team Beta', 'Team Gamma']
-      .map((l, i) => ({ id: `ow-${i}`, label: l })),
-  };
+  const visibleColumns = useMemo(() => selectedColumns, [selectedColumns])
+  //  // estado de seleccionados
+  //  const [filters, setFilters] = useState<FacetState>({
+  //   plant_or_programme: [],
+  //   plant_location: [],
+  //   programme: [],
+  //   status: [],
+  //   owner: [],
+  // });
+
+  // // datos FAKE (persisten sólo en memoria)
+  // const options: Record<FacetKey, FacetOption[]> = {
+  //   plant_or_programme: [
+  //     'Plants/Programmes', 'Plant Location A', 'Plant Location B', 'Programme Alpha', 'Programme Beta',
+  //   ].map((l, i) => ({ id: `pp-${i}`, label: l })),
+  //   plant_location: ['Getafe', 'Tablada', 'Illescas', 'Puerto Real', 'Sevilla']
+  //     .map((l, i) => ({ id: `pl-${i}`, label: l })),
+  //   programme: ['A320', 'A330', 'A350', 'A380']
+  //     .map((l, i) => ({ id: `pr-${i}`, label: l })),
+  //   status: ['Active', 'Paused', 'Archived']
+  //     .map((l, i) => ({ id: `st-${i}`, label: l })),
+  //   owner: ['Team Alpha', 'Team Beta', 'Team Gamma']
+  //     .map((l, i) => ({ id: `ow-${i}`, label: l })),
+  // };
 
   return (
     <Box className="technologyContainer">
@@ -52,7 +59,27 @@ const IndustrialDB = () => {
           gap: 2.5,
         }}
       >
-        <FacetCard
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        <PlantsProgrammes 
+          value={selectedColumns}
+          onChange={setSelectedColumns}
+        />
+        {/* <FacetCard
           title="Plants/Programmes"
           options={options.plant_or_programme}
           value={filters.plant_or_programme}
@@ -81,7 +108,7 @@ const IndustrialDB = () => {
           options={options.owner}
           value={filters.owner}
           onChange={(next) => setFilters(s => ({ ...s, owner: next }))}
-        />
+        /> */}
       </Box>
     </Box>
   </Box>
