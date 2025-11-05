@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from ..models import PlantProgramme
 from ..serializers.plant_programme import PlantProgrammeSerializer
-from apps.core.mixins import ColumnsMixin
+from .mixins import ColumnsMixin
 
 
 class PlantProgrammeViewSet(ColumnsMixin, viewsets.ModelViewSet):
