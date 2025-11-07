@@ -229,6 +229,8 @@ export const useAdminPanel = (): AdminPanelAPI => {
   };
 
   const canCreate = hasPermission?.('users.edit_users') ?? false;
+  console.log('rows en admin', rows);
+  
 
   return {
     groupOptions,

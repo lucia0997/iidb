@@ -15,8 +15,8 @@
   "dependencies": {
     "@airbus/components-react": "^3.1.0",
     "@airbus/icons": "^3.0.3",
-    "@df/ui": "file:public/builds/df-ui-0.1.11.tgz",
-    "@df/utils": "file:public/builds/df-utils-0.1.11.tgz",
+    "@df/ui": "file:public/builds/df-ui-0.1.13.tgz",
+    "@df/utils": "file:public/builds/df-utils-0.1.13.tgz",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.4",

@@ -20,10 +20,16 @@ const IndustrialDB = () => {
     processes: [],
   });
 
+  const [labelMap, setLabelMap] = useState<Record<string, string>>({});
+
   const setFacet = useCallback(
     (key: FacetKey) => (next: string[]) => setFacets((s) => ({ ...s, [key]: next })),
     []
   );
+
+  const onLabels = useCallback((map: Record<string, string>) => {
+    setLabelMap((prev) => ({...prev, ...map}))
+  }, [])
 
   const selectedKeys = useMemo(() => {
     const all = Object.values(facets).flat();
@@ -42,6 +48,7 @@ const IndustrialDB = () => {
       projects: [],
       processes: [],
     });
+    setLabelMap({});
   }, []);
   const reset = clearAll;
 
@@ -53,8 +60,13 @@ const IndustrialDB = () => {
     const params = new URLSearchParams();
     params.set('columns', selectedKeys.join(','));
 
-    navigate(`${ROOT}/industrial-database/view?${params.toString()}`, {
-      state: { columns: selectedKeys },
+    const columnsState = selectedKeys.map((key) => ({
+      key,
+      label: labelMap[key] ?? key,
+    }))
+
+    navigate(`${ROOT}/industrial-database/view?${params}`, {
+      state: { columns: columnsState },
       replace: false,
     });
   }, [canApply, navigate, selectedKeys]);
@@ -88,11 +100,10 @@ const IndustrialDB = () => {
             gap: 2.5,
           }}
         >
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} />
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} />
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} />
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} />
-          {/* <PlantsProgrammes value={selectedColumns} onChange={setSelectedColumns} /> */}
+          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
+          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
+          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
+          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
         </Box>
       </Box>
       <Box className="footerBtns">

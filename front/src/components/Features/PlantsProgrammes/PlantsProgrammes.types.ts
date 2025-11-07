@@ -8,4 +8,5 @@ export type PlantsProgrammesProps = {
     disabled?: boolean;
     title?: string;
     subtitle?: string;
+    onLabels?: (map: Record<string, string>) => void;
 }

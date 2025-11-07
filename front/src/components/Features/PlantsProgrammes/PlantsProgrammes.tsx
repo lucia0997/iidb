@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useProgrammeOptions } from "../../../hooks/PlantsProgrammes/useProgrammeOptions"
 import { PlantsProgrammesProps } from "./PlantsProgrammes.types"
 import { FacetCard } from "../../CustomComponents/FacetCard";
@@ -8,6 +8,7 @@ const PlantsProgrammes = ({
     onChange,
     disabled,
     title = 'Plants/Programmes',
+    onLabels,
     // subtitle = 'Select the columns to display'
 }: PlantsProgrammesProps) => {
 
@@ -17,6 +18,12 @@ const PlantsProgrammes = ({
         () => (data ?? []).map((o) => ({ id: o.key, label: o.label})),
         [data]
     );
+
+    useEffect(() => {
+      if (!onLabels) return;
+      const map = Object.fromEntries(options.map(o => [o.id, o.label]))
+      onLabels(map)
+    }, [onLabels, options])
 
   return (
     <FacetCard 
