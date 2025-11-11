@@ -30,9 +30,10 @@ class PlantProgrammeRowDetailView(ColumnsMixin, RetrieveAPIView):
     lookup_field = "pk"
     
     def get(self, request, *args, **kargs):
-        instance: self.get_object()
+        instance = self.get_object()
         
-        available = set(self.get_available_columns())
+        tmp_serializer = self.get_serializer()
+        available = set(tmp_serializer.fields.keys())
         only_fields = parse_and_validate_columns(request, available)
         
         serializer = self.get_serializer(instance, only_fields= only_fields)

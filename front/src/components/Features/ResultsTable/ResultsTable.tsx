@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MRT_ColumnDef } from 'material-react-table';
 import type { ColState, Row } from './ResultTable.types';
 import { Visibility } from '@mui/icons-material';
+import { RowDetailDrawer } from '../RowDetailDrawer';
 
 //TODO: rewiew let use
 
@@ -40,6 +41,8 @@ console.log('selectedKeys in results', selectedKeys);
     sorting: [],
     filters: [],
   });
+  const [detailId, setDetailId] = useState<number | string | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,7 +82,11 @@ console.log('selectedKeys in results', selectedKeys);
   }, [normalized]);
 
   console.log('columnDefs', columnDefs);
-  
+
+  const handleView = (rowId: number | string) => {
+    setDetailId(rowId);
+    setOpen(true)
+  }
 
   if (!normalized.length) {
     return (
@@ -124,12 +131,17 @@ console.log('selectedKeys in results', selectedKeys);
                 id: 'view',
                 label: t('view'),
                 icon: <Visibility />,
-                // onClick: () => openUserProfile(row.id),
+                onClick: (row) => handleView(row.id),
               },
             ]}
           />
         </Box>
       )}
+      <RowDetailDrawer 
+        open={open}
+        onClose={() => setOpen(false)}
+        rowId={detailId}
+      />
     </Box>
   );
 };

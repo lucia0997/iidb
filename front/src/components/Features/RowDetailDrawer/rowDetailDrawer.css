@@ -1,0 +1,19 @@
+.drawerContainer {
+    width: 560px;
+}
+
+.drawerBox {
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-top: 20px;
+}
+
+.drawerDivider {
+    margin: 0 2x;
+}
+
+.drawerLabel {
+    opacity: 0.75;
+}

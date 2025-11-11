@@ -7,7 +7,7 @@ router.register(r"plants-programmes", PlantProgrammeViewSet, basename="plants-pr
 
 urlpatterns = [
     path(
-        "plants-programmes/rows/<int:pk>",
+        "plants-programmes/rows/<int:pk>/",
         PlantProgrammeRowDetailView.as_view(),
         name="plants-programmes-row-detail"
     )

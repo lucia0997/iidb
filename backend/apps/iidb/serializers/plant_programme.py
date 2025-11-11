@@ -19,12 +19,6 @@ class PlantProgrammeSerializer(serializers.ModelSerializer):
         model = PlantProgramme
         fields = ["id", "technology_name", "program", "business", "site"]
 
-    # def validate_program(self, value):
-    #     if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
-    #         raise serializers.ValidationError(
-    #             _("Program must be a list of strings."))
-    #     return value
-    
     def validate_program(self, value):
         if value is None:
             return []
@@ -47,7 +41,3 @@ class PlantProgrammeRowSerializer(serializers.ModelSerializer):
             for f in list(self.fields.keys()):
                 if f not in keep:
                     self.fields.pop(f)
-            # only = {"id", *only_fields}
-            # existing = set(self.fields.keys())
-            # for f in list(existing - only):
-            #     self.fields.pop(f)
