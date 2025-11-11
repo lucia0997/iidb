@@ -14,7 +14,6 @@ const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'));
 const Technology = lazy(() => import('../pages/Technology/Technology'));
 const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'));
 const Project = lazy(() => import('../pages/Project/Project'));
-const SelectedColumnsPage = lazy(() => import('../pages/IndustrialDB/SelectedColumnsPage/SelectedColumnsPage'))
 const ResultsTable = lazy(() => import('../components/Features/ResultsTable/ResultsTable'))
 
 export default function AppRoutes() {
