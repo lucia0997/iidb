@@ -10,6 +10,8 @@ import { MRT_ColumnDef } from 'material-react-table';
 import type { ColState, Row } from './ResultTable.types';
 import { Visibility } from '@mui/icons-material';
 
+//TODO: rewiew let use
+
 const ResultsTable = () => {
   const { i18n, t } = useTranslation('results_table');
   const { hasPermission } = useAuth();
