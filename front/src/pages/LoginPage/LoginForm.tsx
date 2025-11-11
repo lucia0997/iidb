@@ -36,7 +36,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setLoading(true);
 
     try {
-      console.log(form);
+      console.log('pagelogin', form);
       await login(form);
     } catch (error: any) {
       const errorMessage =
