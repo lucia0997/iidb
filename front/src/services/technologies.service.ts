@@ -1,9 +1,9 @@
-import { ColumnOptionDTO, PlantProgrammeRowsApiResponse } from "../components/Features/PlantsProgrammes";
 import type { AxiosHttpClient } from "@df/utils";
 import { Row } from "../components/Features/ResultsTable";
+import { TechnologiesRowsApiResponse, TechnologyColumnOptionDTO } from "../components/Features/Technologies";
 
-export async function getProgrammeOptions(api: AxiosHttpClient): Promise<ColumnOptionDTO[]> {
-    const { data } = await api.get<ColumnOptionDTO[]>('/plants-programmes/columns/');
+export async function getProgrammeOptions(api: AxiosHttpClient): Promise<TechnologyColumnOptionDTO[]> {
+    const { data } = await api.get<TechnologyColumnOptionDTO[]>('/technologies/columns/');
     return data;
 }
 
@@ -16,7 +16,7 @@ export async function getProgrammeRows(
         return { rows: [], count: 0 }
     }
 
-    const { data } = await api.get<Row[] | PlantProgrammeRowsApiResponse>('/plants-programmes/rows/', {
+    const { data } = await api.get<Row[] | TechnologiesRowsApiResponse>('/technologies/rows/', {
         params: { columns: selectedKeys.join(','), page_size: pageSize},
     });
 
@@ -38,7 +38,7 @@ export async function getProgrammeRowDetail(
     rowId: number | string
 ): Promise<Row> {
     const { data } = await api.get<Row>(
-        `/plants-programmes/rows/${rowId}/`
+        `/technologies/rows/${rowId}/`
     );
     return data;
 }
