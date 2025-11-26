@@ -13,7 +13,7 @@ class TechnologySerializer(serializers.ModelSerializer):
         required=False,
     )
 
-    coc_export_name = serializers.CharField(
+    coc_expert_name = serializers.CharField(
         label=_("CoC Expert Name"),
         allow_blank=True,
         allow_null=True,
@@ -28,7 +28,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     )
 
     technology_domains = serializers.CharField(
-        verbose_name=_("Technology Domains"),
+        label=_("Technology Domains"),
         allow_blank=True,
         allow_null=True,
         required=False,
@@ -48,8 +48,8 @@ class TechnologySerializer(serializers.ModelSerializer):
         required=False,
     )
 
-    tmd_names = serializers.ListField(
-        child=serializers.CharField,
+    tdm_names = serializers.ListField(
+        child=serializers.CharField(),
         label=_("TDM Name"),
         help_text=_("List of TMD names"),
         required=False,
@@ -57,7 +57,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     )
 
     tech_cluster_dependencies = serializers.ListField(
-        child=serializers.CharField,
+        child=serializers.CharField(),
         label=_("Tech. Cluster Dependencies"),
         help_text=_("Same list of values as Technology Cluster"),
         required=False,
@@ -65,7 +65,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     )
 
     targeted_programmes = serializers.ListField(
-        child=serializers.CharField,
+        child=serializers.CharField(),
         label=_("Targeted Programmes"),
         help_text=_(
             "List of targeted programmes (same taxonomy as PlantProgrammes.program)"),

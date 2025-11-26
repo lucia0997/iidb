@@ -18,7 +18,7 @@ class Technology(models.Model):
         verbose_name=_("Technology Cluster"),
     )
     
-    coc_export_name = models.CharField(
+    coc_expert_name = models.CharField(
         max_length=255,
         verbose_name=_("CoC Expert Name"),
         blank=True,
@@ -37,7 +37,7 @@ class Technology(models.Model):
         blank=True,
     )
     
-    tmd_names = models.JSONField(
+    tdm_names = models.JSONField(
         default=list,
         verbose_name=_("TDM Name"),
         help_text=_("List of TMD names"),
