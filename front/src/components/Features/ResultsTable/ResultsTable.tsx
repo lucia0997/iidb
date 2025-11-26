@@ -10,6 +10,7 @@ import { MRT_ColumnDef } from 'material-react-table';
 import type { ColState, Row } from './ResultTable.types';
 import { Visibility } from '@mui/icons-material';
 import { RowDetailDrawer } from '../RowDetailDrawer';
+import { getProgrammeRows } from '../../../services/programmes.service';
 
 //TODO: rewiew let use
 
@@ -47,19 +48,25 @@ console.log('selectedKeys in results', selectedKeys);
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!selectedKeys.length) return;
+      if (!selectedKeys.length) {
+        setRows([]);
+        setRowCount(0);
+        return
+      };
+
       setLoading(true);
       setError(null);
       try {
-        const { data } = await api.get(`/plants-programmes/rows/`, {
-          params: { columns: selectedKeys.join(','), page_size: 200 },
-        });
+        // const { data } = await api.get(`/plants-programmes/rows/`, {
+        //   params: { columns: selectedKeys.join(','), page_size: 200 },
+        // });
+        const { rows, count } = await getProgrammeRows(api, selectedKeys, 200)
 
-        const results = Array.isArray(data) ? data : (data.results ?? []);
-        const count: number = results.data?.count ?? results.length;
+        // const results = Array.isArray(data) ? data : (data.results ?? []);
+        // const count: number = results.data?.count ?? results.length;
 
         if (!cancelled) {
-          setRows(results);
+          setRows(rows);
           setRowCount(count);
         }
       } catch (e: any) {
@@ -118,7 +125,7 @@ console.log('selectedKeys in results', selectedKeys);
             rowCount={rowCount}
             query={query}
             onQueryChange={setQuery}
-            onCreate={canCreate ? handleCreate : undefined}
+            // onCreate={canCreate ? handleCreate : undefined}
             onEditRow={canCreate ? handleEdit : undefined}
             onDeleteRow={canCreate ? handleDelete : undefined}
             // getRowId={(r) => r.id}

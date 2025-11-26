@@ -5,6 +5,7 @@ import { Box, CircularProgress, Grid, Stack } from '@mui/material';
 import { CloseOutlined } from '@mui/icons-material';
 import './rowDetailDrawer.css'
 import { useApiClient } from '@df/utils';
+import { getProgrammeOptions, getProgrammeRowDetail } from '../../../services/programmes.service';
 
 //TODO: review let use
 
@@ -28,13 +29,15 @@ const RowDetailDrawer = ({ open, onClose, rowId }: RowDetailDrawerProps) => {
       try {
         setError(null);
         setLoading(true);
-        const [colsRes, rowRes] = await Promise.all([
-          api.get<ColumnMeta[]>("/plants-programmes/columns/"),
-          api.get<Record<string, unknown>>(`/plants-programmes/rows/${rowId}/`),
+        const [colsRes, rowDetail] = await Promise.all([
+          getProgrammeOptions(api),
+          // api.get<ColumnMeta[]>("/plants-programmes/columns/"),
+          // api.get<Record<string, unknown>>(`/plants-programmes/rows/${rowId}/`),
+          getProgrammeRowDetail(api, rowId)
         ]);
         if (!alive) return;
-        setColumns(colsRes.data);
-        setData(rowRes.data);
+        setColumns(colsRes);
+        setData(rowDetail);
       } catch (e: any) {
         if (!alive) return;
         setError(e?.message ?? 'Unknown error');
@@ -45,7 +48,7 @@ const RowDetailDrawer = ({ open, onClose, rowId }: RowDetailDrawerProps) => {
     return () => {
       alive = false;
     };
-  }, [open, rowId ]);
+  }, [open, rowId, api]);
 
   const entries = useMemo(() => {
     if (!data) return [];
