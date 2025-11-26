@@ -1,2 +1,3 @@
 export { default as IndustrialDB } from './IndustrialDB';
-export type { } from './IndustrialDB.types'
+export type { FacetKey, FacetState } from './IndustrialDB.types'
+export { default as SelectecColumnsPage } from './SelectedColumnsPage/SelectedColumnsPage'

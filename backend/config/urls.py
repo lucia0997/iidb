@@ -22,5 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("apps.authentication.urls")),
     path("users/", include("apps.users.urls")),
-    path("api/", include("apps.iidb.urls"))
+    path("", include("apps.iidb.urls"))
 ]

@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     "apps.authentication",              # Authentication 
     "apps.authorization",               # Authorization
     "apps.users",                       # User Management
-    "apps.iidb",                        # Project Innovation Industrial DB 
+    "apps.iidb.apps.IidbConfig",        # Project Innovation Industrial DB 
 ]
 
 # ___________________________ MIDDLEWARE ___________________________

@@ -7,6 +7,9 @@ export function useProgrammeOptions() {
   return useQuery({
     queryKey: ['programme-options'],
     queryFn: () => getProgrammeOptions(api),
-    staleTime: 5 * 60_000,
+    // staleTime: Infinity,
+    // gcTime: Infinity,
+    // refetchOnMount: false,
+    // refetchOnWindowFocus: false,
   });
 }

@@ -1,0 +1,8 @@
+.selectedColumnsContainer {
+    padding: 20px;
+}
+
+.tableContainer {
+    overflow: auto;
+    border-radius: 10px;
+}
