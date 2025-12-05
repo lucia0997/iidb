@@ -48,11 +48,12 @@ SESSION_COOKIE_SECURE = True
 
 # ___________________________ DATABASE ___________________________
 
-DB_NAME = os.getenv("DB_NAME", "app_dev")
-DB_USER = os.getenv("DB_USER", "app")
-DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD", "app")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5342")
+DB_NAME = os.getenv("DB_NAME", "postgres")
+DB_SCHEMA = os.getenv("DB_SCHEMA", "iidb")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD", "123456")
+DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
 DATABASES = {
     "default": {
@@ -62,6 +63,9 @@ DATABASES = {
         "PASSWORD": DB_USER_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
+        "OPTIONS": {
+            "options": f"-c search_path={DB_SCHEMA},public"
+        },
     }
 }
 
