@@ -10,8 +10,8 @@ notebooks/.ipynb_checkpoints/
 #.env
 .venv/
 venv/
-env/
-*/.env
+#env/
+#*/.env
 
 # Logs and databases
 *.log
@@ -63,3 +63,5 @@ dist-ssr
 
 # Others
 __DOCS__/*
+front/yarn.lock
+front/package-lock.json
