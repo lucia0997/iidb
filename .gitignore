@@ -10,8 +10,8 @@ notebooks/.ipynb_checkpoints/
 #.env
 .venv/
 venv/
-#env/
-#*/.env
+env/
+*/.env
 
 # Logs and databases
 *.log
