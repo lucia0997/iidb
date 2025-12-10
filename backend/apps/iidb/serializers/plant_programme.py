@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from ..models import PlantProgramme
+from ..models import PlantProgramme, Technology
 from django.utils.translation import gettext_lazy as _
 
 
 class PlantProgrammeSerializer(serializers.ModelSerializer):
-    technology_name = serializers.CharField(label=_("Technology Name"), allow_blank=True, allow_null=True, required=False)
+    technology_name = serializers.SlugRelatedField(
+        queryset=Technology.objects.all(),
+        slug_field='technology_name',
+        label=_("Technology Name"),
+        allow_null=True,
+        required=False
+    )
     program = serializers.ListField(
         child=serializers.CharField(),
         label=_("Program"),
