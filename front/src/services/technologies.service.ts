@@ -2,7 +2,7 @@ import type { AxiosHttpClient } from "@df/utils";
 import { Row } from "../components/Features/ResultsTable";
 import { TechnologiesRowsApiResponse, TechnologyColumnOptionDTO } from "../components/Features/Technologies";
 
-export async function getProgrammeOptions(api: AxiosHttpClient): Promise<TechnologyColumnOptionDTO[]> {
+export async function getTechnologyOptions(api: AxiosHttpClient): Promise<TechnologyColumnOptionDTO[]> {
     const { data } = await api.get<TechnologyColumnOptionDTO[]>('/technologies/columns/');
     return data;
 }
