@@ -2,6 +2,7 @@ from .plant_programme import PlantProgrammeSerializer, PlantProgrammeRowSerializ
 from .technology import TechnologySerializer, TechnologyRowSerializer
 from .strategy import StrategySerializer, StrategyRowSerializer
 from .process import ProcessSerializer, ProcessRowSerializer
+from .project import ProjectSerializer, ProjectRowSerializer
 
 __all__ = [
     "PlantProgrammeSerializer",
@@ -11,5 +12,7 @@ __all__ = [
     "StrategySerializer",
     "StrategyRowSerializer",
     "ProcessSerializer",
-    "ProcessRowSerializer"
+    "ProcessRowSerializer",
+    "ProjectSerializer",
+    "ProjectRowSerializer"
 ]
