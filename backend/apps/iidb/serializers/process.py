@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from ..models import Process
 from django.utils.translation import gettext_lazy as _
+from ..models import Technology
 
 
 class ProcessSerializer(serializers.ModelSerializer):
@@ -8,12 +9,24 @@ class ProcessSerializer(serializers.ModelSerializer):
     subgroup_processes = serializers.CharField(label=_("Sub-Group Processes"), allow_blank=True, allow_null=True, required=False)
     process_name = serializers.CharField(label=_("Process Name"), allow_blank=True, allow_null=True, required=False)
     process_resp_name = serializers.CharField(label=_("Process Responsible Name"), allow_blank=True, allow_null=True, required=False)
-    technology_name = serializers.CharField(label=_("Technology Name"), allow_blank=True, allow_null=True, required=False)
+    technology_name = serializers.SlugRelatedField(
+        queryset=Technology.objects.all(),
+        slug_field='technology_name',
+        label=_("Technology Name"),
+        allow_null=True,
+        required=False
+    )
 
     class Meta:
         model = Process
         fields = ["id", "group_processes", "subgroup_processes", "process_name", "process_resp_name", "technology_name"]
     
+    def validate_technology_name(self, value):
+        if value is None:
+            return None
+        if not isinstance(value, Technology):
+            raise serializers.ValidationError(_("Technology must be a valid Technology object"))
+        return value
     
 class ProcessRowSerializer(serializers.ModelSerializer):
     class Meta:

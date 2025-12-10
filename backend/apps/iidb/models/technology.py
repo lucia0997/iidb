@@ -46,6 +46,7 @@ class Technology(models.Model):
     
     technology_name = models.CharField(
         max_length=255,
+        unique=True,
         verbose_name=_("Technology Name"),
     )
     
