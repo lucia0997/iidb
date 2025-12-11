@@ -12,11 +12,12 @@ import { ToastViewport } from './components/Toast/ToastViewport';
 // Client instances
 const queryClient = new QueryClient();
 const axiosClient = new AxiosHttpClient({ baseURL: import.meta.env.VITE_API_URL ?? '/api' });
+const basename = import.meta.env.BASE_URL;
 
 export default function App() {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <QueryClientProvider client={queryClient}>
           <ApiClientProvider client={axiosClient}>
             <AuthProvider>

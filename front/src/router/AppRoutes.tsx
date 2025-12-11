@@ -20,13 +20,12 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route
+       <Route
         element={
-          <ProtectedRoute>
+          <ProtectedRoute LoadingFallback={LoadingScreen} loginPath='/login'>
             <AppLayout />
           </ProtectedRoute>
-        }
-      >
+        }>
         <Route path="/technology-roadmappping" element={<Technology />} />
         <Route path="/industrial-database" element={<IndustrialDB />} />
         <Route path="/industrial-database/view" element={<ResultsTable />} />
