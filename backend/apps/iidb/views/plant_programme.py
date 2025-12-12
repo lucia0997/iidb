@@ -15,8 +15,7 @@ class PlantProgrammeViewSet(ColumnsMixin, viewsets.ModelViewSet):
     queryset = PlantProgramme.objects.all().order_by("technology_name")
     serializer_class = PlantProgrammeSerializer
 
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["business", "site"]
     search_fields = ["technology_name", "program", "business", "site"]
     ordering_fields = ["technology_name", "business", "site"]

@@ -14,34 +14,10 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
     queryset = Technology.objects.all().order_by("technology_name")
     serializer_class = TechnologySerializer
 
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-
-    filterset_fields = [
-        "technology_cluster",
-        "current_trl",
-        "fom_type",
-    ]
-
-    search_fields = [
-        "technology_name",
-        "technology_cluster",
-        "coc_expert_name",
-        "product_domains",
-        "technology_domains",
-        "ac_application",
-        "targeted_programmes",
-    ]
-
-    ordering_fields = [
-        "technology_name",
-        "technology_cluster",
-        "current_trl",
-        "fom_value_percent",
-    ]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ["technology_cluster", "current_trl", "fom_type"]
+    search_fields = ["technology_name", "technology_cluster", "coc_expert_name", "product_domains", "technology_domains", "ac_application", "targeted_programmes"]
+    ordering_fields = ["technology_name", "technology_cluster", "current_trl", "fom_value_percent"]
     
 class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
     """
@@ -74,8 +50,7 @@ class TRLViewSet(ColumnsMixin, viewsets.ModelViewSet):
     queryset = TRL.objects.all().order_by("trl_number")
     serializer_class = TRLSerializer
 
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["trl_number", "trl_year", "trl_cost"]
     search_fields = ["trl_number", "trl_year", "trl_cost"]
     ordering_fields = ["trl_number", "trl_year", "trl_cost"]

@@ -14,12 +14,7 @@ class TRLLevel(models.IntegerChoices):
 
 
 class TRL(models.Model):
-    trl_number = models.PositiveSmallIntegerField(
-        choices=TRLLevel.choices,
-        verbose_name=_("TRL Number"),
-        null=False,
-        blank=False,
-    )
+    trl_number = models.PositiveSmallIntegerField(choices=TRLLevel.choices, verbose_name=_("TRL Number"), null=False, blank=False)
     trl_year = models.PositiveSmallIntegerField(verbose_name=_("TRL Year"), null=True, blank=True)
     trl_cost = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("TRL Cost"), null=True, blank=True)
 
@@ -33,96 +28,20 @@ class TRL(models.Model):
 
 
 class Technology(models.Model):
-    technology_cluster = models.CharField(
-        max_length=255,
-        verbose_name=_("Technology Cluster"),
-    )
-    
-    coc_expert_name = models.CharField(
-        max_length=255,
-        verbose_name=_("CoC Expert Name"),
-        blank=True,
-    )
-    
-    # De momento texto plano, pendiente confirmar si es una lista para migrar a JSONField(list)
-    product_domains = models.CharField(
-        max_length=255,
-        verbose_name=_("Product Domains"),
-        blank=True
-    )
-    
-    technology_domains = models.CharField(
-        max_length=255,
-        verbose_name=_("Technology Domains"),
-        blank=True,
-    )
-    
-    tdm_names = models.JSONField(
-        default=list,
-        verbose_name=_("TDM Name"),
-        help_text=_("List of TMD names"),
-        blank=True
-    )
-    
-    technology_name = models.CharField(
-        max_length=255,
-        unique=True,
-        verbose_name=_("Technology Name"),
-    )
-    
-    technology_description = models.TextField(
-        verbose_name=_("Technology Description"),
-        blank=True
-    )
-    
-    current_trl = models.PositiveSmallIntegerField(
-        verbose_name=_("Current TRL (1-9)"),
-        choices=TRLLevel.choices,
-        null=True,
-        blank=True,
-    )
-
-    trls = models.ManyToManyField(
-        TRL,
-        through="TechnologyTRL",
-        related_name="technologies",
-        verbose_name=_("TRLs"),
-        blank=True,
-    )
-
-    tech_cluster_dependencies = models.JSONField(
-        default=list,
-        verbose_name=_("Tech. Cluster Dependencies"),
-        help_text=_("Same list of values as Technology Cluster"),
-        blank=True
-    )
-    
-    fom_type = models.CharField(
-        max_length=100,
-        verbose_name=_("FoM Type"),
-        blank=True
-    )
-    
-    fom_value_percent = models.DecimalField(
-        verbose_name=_("FoM Value (%)"),
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True
-    )
-    
-    targeted_programmes = models.JSONField(
-        default=list,
-        verbose_name=_("Targeted Programmes"),
-        help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"),
-        blank=True
-    )
-    
-    ac_application = models.CharField(
-        max_length=255,
-        verbose_name=_("A/C Application"),
-        blank=True
-    )
+    technology_cluster = models.CharField(max_length=255,verbose_name=_("Technology Cluster"))    
+    coc_expert_name = models.CharField(max_length=255, verbose_name=_("CoC Expert Name"), blank=True)    
+    product_domains = models.CharField(max_length=255, verbose_name=_("Product Domains"), blank=True)
+    technology_domains = models.CharField(max_length=255, verbose_name=_("Technology Domains"), blank=True)
+    tdm_names = models.JSONField(default=list, verbose_name=_("TDM Name"), help_text=_("List of TMD names"), blank=True)
+    technology_name = models.CharField(max_length=255, unique=True, verbose_name=_("Technology Name"))
+    technology_description = models.TextField(verbose_name=_("Technology Description"), blank=True)
+    current_trl = models.PositiveSmallIntegerField(verbose_name=_("Current TRL (1-9)"), choices=TRLLevel.choices, null=True, blank=True)
+    trls = models.ManyToManyField(TRL, through="TechnologyTRL", related_name="technologies", verbose_name=_("TRLs"), blank=True)
+    tech_cluster_dependencies = models.JSONField(default=list, verbose_name=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
+    fom_type = models.CharField(max_length=100, verbose_name=_("FoM Type"), blank=True)    
+    fom_value_percent = models.DecimalField(verbose_name=_("FoM Value (%)"), max_digits=5, decimal_places=2, null=True, blank=True)
+    targeted_programmes = models.JSONField(default=list, verbose_name=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), blank=True)
+    ac_application = models.CharField(max_length=255, verbose_name=_("A/C Application"), blank=True)
     
     class Meta:
         db_table = "technologies"
@@ -139,14 +58,9 @@ class TechnologyTRL(models.Model):
     enforcing a single TRL per TRL number (1-9) per technology.
     """
 
-    technology = models.ForeignKey(
-        Technology, on_delete=models.CASCADE, related_name="technology_trls"
-    )
+    technology = models.ForeignKey(Technology, on_delete=models.CASCADE, related_name="technology_trls")
     trl = models.ForeignKey(TRL, on_delete=models.CASCADE, related_name="technology_trls")
-    trl_number = models.PositiveSmallIntegerField(
-        choices=TRLLevel.choices,
-        verbose_name=_("TRL Number"),
-    )
+    trl_number = models.PositiveSmallIntegerField(choices=TRLLevel.choices, verbose_name=_("TRL Number"))
 
     class Meta:
         db_table = "technology_trls"

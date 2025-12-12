@@ -5,111 +5,20 @@ from ..models import Technology, TRL
 
 
 class TechnologySerializer(serializers.ModelSerializer):
-
-    technology_cluster = serializers.CharField(
-        label=_("Technology Cluster"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    coc_expert_name = serializers.CharField(
-        label=_("CoC Expert Name"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    product_domains = serializers.CharField(
-        label=_("Product Domains"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    technology_domains = serializers.CharField(
-        label=_("Technology Domains"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    technology_name = serializers.CharField(
-        label=_("Technology Name"),
-        allow_blank=False,
-        allow_null=False,
-        required=True,
-    )
-
-    technology_description = serializers.CharField(
-        label=_("Technology Description"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    tdm_names = serializers.ListField(
-        child=serializers.CharField(),
-        label=_("TDM Name"),
-        help_text=_("List of TMD names"),
-        required=False,
-        allow_empty=True,
-    )
-
-    tech_cluster_dependencies = serializers.ListField(
-        child=serializers.CharField(),
-        label=_("Tech. Cluster Dependencies"),
-        help_text=_("Same list of values as Technology Cluster"),
-        required=False,
-        allow_empty=True
-    )
-
-    targeted_programmes = serializers.ListField(
-        child=serializers.CharField(),
-        label=_("Targeted Programmes"),
-        help_text=_(
-            "List of targeted programmes (same taxonomy as PlantProgrammes.program)"),
-        required=False,
-        allow_empty=True,
-    )
-
-    current_trl = serializers.IntegerField(
-        label=_("Current TRL (1-9)"),
-        required=False,
-        allow_null=True,
-        min_value=1,
-        max_value=9
-    )
-
-    trls = serializers.PrimaryKeyRelatedField(
-        queryset=TRL.objects.all(),
-        many=True,
-        label=_("TRLs"),
-        required=False,
-        allow_empty=True,
-    )
-
-    fom_type = serializers.CharField(
-        label=_("FoM Type"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
-
-    fom_value_percent = serializers.DecimalField(
-        label=_("FoM Value (%)"),
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-    )
-
-    ac_application = serializers.CharField(
-        label=_("A/C Application"),
-        allow_blank=True,
-        allow_null=True,
-        required=False,
-    )
+    technology_cluster = serializers.CharField(label=_("Technology Cluster"),allow_blank=True,allow_null=True,required=False)
+    coc_expert_name = serializers.CharField(label=_("CoC Expert Name"), allow_blank=True, allow_null=True, required=False)
+    product_domains = serializers.CharField(label=_("Product Domains"), allow_blank=True, allow_null=True, required=False)
+    technology_domains = serializers.CharField(label=_("Technology Domains"), allow_blank=True, allow_null=True, required=False)
+    technology_name = serializers.CharField(label=_("Technology Name"), allow_blank=False, allow_null=False, required=True)
+    technology_description = serializers.CharField(label=_("Technology Description"), allow_blank=True, allow_null=True, required=False)
+    tdm_names = serializers.ListField(child=serializers.CharField(), label=_("TDM Name"), help_text=_("List of TMD names"), required=False, allow_empty=True)
+    tech_cluster_dependencies = serializers.ListField(child=serializers.CharField(), label=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), required=False, allow_empty=True)
+    targeted_programmes = serializers.ListField(child=serializers.CharField(), label=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), required=False, allow_empty=True)
+    current_trl = serializers.IntegerField(label=_("Current TRL (1-9)"), required=False, allow_null=True, min_value=1, max_value=9)
+    trls = serializers.PrimaryKeyRelatedField(queryset=TRL.objects.all(), many=True, label=_("TRLs"), required=False, allow_empty=True)
+    fom_type = serializers.CharField(label=_("FoM Type"), allow_blank=True, allow_null=True, required=False)
+    fom_value_percent = serializers.DecimalField(label=_("FoM Value (%)"), max_digits=5, decimal_places=2, required=False, allow_null=True)
+    ac_application = serializers.CharField(label=_("A/C Application"), allow_blank=True, allow_null=True, required=False)
 
     class Meta:
         model = Technology

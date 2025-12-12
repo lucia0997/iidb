@@ -4,20 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class PlantProgrammeSerializer(serializers.ModelSerializer):
-    technology_name = serializers.SlugRelatedField(
-        queryset=Technology.objects.all(),
-        slug_field='technology_name',
-        label=_("Technology Name"),
-        allow_null=True,
-        required=False
-    )
-    program = serializers.ListField(
-        child=serializers.CharField(),
-        label=_("Program"),
-        help_text=_("List of technology-related programs"),
-        required=False,
-        allow_empty=True,
-    )
+    technology_name = serializers.SlugRelatedField(queryset=Technology.objects.all(), slug_field='technology_name', label=_("Technology Name"), allow_null=True, required=False)
+    program = serializers.ListField(child=serializers.CharField(), label=_("Program"), help_text=_("List of technology-related programs"), required=False, allow_empty=True)
     business = serializers.CharField(label=_("Business"), allow_blank=True, allow_null=True, required=False)
     site = serializers.CharField(label=_("Site"), allow_blank=True, allow_null=True, required=False)
 
