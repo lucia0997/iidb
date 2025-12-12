@@ -81,12 +81,12 @@ class TechnologySerializer(serializers.ModelSerializer):
         max_value=9
     )
 
-    trl = serializers.SlugRelatedField(
+    trls = serializers.PrimaryKeyRelatedField(
         queryset=TRL.objects.all(),
-        slug_field='id',
-        label=_("TRL"),
-        allow_null=True,
-        required=False
+        many=True,
+        label=_("TRLs"),
+        required=False,
+        allow_empty=True,
     )
 
     fom_type = serializers.CharField(
@@ -123,7 +123,7 @@ class TechnologySerializer(serializers.ModelSerializer):
             "technology_name",
             "technology_description",
             "current_trl",
-            "trl",
+            "trls",
             "tech_cluster_dependencies",
             "fom_type",
             "fom_value_percent",
@@ -148,6 +148,33 @@ class TechnologySerializer(serializers.ModelSerializer):
 
     def validate_targeted_programmes(self, value):
         return self._validate_string_list(value, "Targeted Programmes")
+
+    def validate_trls(self, value):
+        if not value:
+            return []
+        numbers = [trl.trl_number for trl in value]
+        if len(numbers) != len(set(numbers)):
+            raise serializers.ValidationError(_("Each TRL number can only be linked once per technology."))
+        return value
+
+    def _set_trls(self, instance, trls):
+        if trls is None:
+            return
+        # Clear and set in one go; through model enforces uniqueness by trl_number
+        instance.trls.set(trls)
+
+    def create(self, validated_data):
+        trls = validated_data.pop("trls", [])
+        instance = super().create(validated_data)
+        self._set_trls(instance, trls)
+        return instance
+
+    def update(self, instance, validated_data):
+        trls = validated_data.pop("trls", None)
+        instance = super().update(instance, validated_data)
+        if trls is not None:
+            self._set_trls(instance, trls)
+        return instance
 
 
 class TechnologyRowSerializer(serializers.ModelSerializer):

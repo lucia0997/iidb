@@ -12,24 +12,26 @@ class TRLLevel(models.IntegerChoices):
     TRL8 = 8, "TRL 8",
     TRL9 = 9, "TRL 9"
 
+
 class TRL(models.Model):
     trl_number = models.PositiveSmallIntegerField(
         choices=TRLLevel.choices,
         verbose_name=_("TRL Number"),
         null=False,
-        blank=False
+        blank=False,
     )
     trl_year = models.PositiveSmallIntegerField(verbose_name=_("TRL Year"), null=True, blank=True)
     trl_cost = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("TRL Cost"), null=True, blank=True)
-    
+
     class Meta:
         db_table = "trls"
         verbose_name = _("TRL")
         verbose_name_plural = _("TRLs")
-    
+
     def __str__(self):
         return f"TRL {self.trl_number}"
-    
+
+
 class Technology(models.Model):
     technology_cluster = models.CharField(
         max_length=255,
@@ -80,7 +82,13 @@ class Technology(models.Model):
         blank=True,
     )
 
-    trl = models.ForeignKey(TRL, on_delete=models.CASCADE, verbose_name=_("TRL"), null=True, blank=True)
+    trls = models.ManyToManyField(
+        TRL,
+        through="TechnologyTRL",
+        related_name="technologies",
+        verbose_name=_("TRLs"),
+        blank=True,
+    )
 
     tech_cluster_dependencies = models.JSONField(
         default=list,
@@ -123,3 +131,37 @@ class Technology(models.Model):
         
     def __str__(self):
         return self.technology_name
+
+
+class TechnologyTRL(models.Model):
+    """
+    Through table to relate a Technology with multiple TRL entries,
+    enforcing a single TRL per TRL number (1-9) per technology.
+    """
+
+    technology = models.ForeignKey(
+        Technology, on_delete=models.CASCADE, related_name="technology_trls"
+    )
+    trl = models.ForeignKey(TRL, on_delete=models.CASCADE, related_name="technology_trls")
+    trl_number = models.PositiveSmallIntegerField(
+        choices=TRLLevel.choices,
+        verbose_name=_("TRL Number"),
+    )
+
+    class Meta:
+        db_table = "technology_trls"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["technology", "trl_number"],
+                name="uniq_technology_trl_number",
+            ),
+            models.UniqueConstraint(
+                fields=["technology", "trl"],
+                name="uniq_technology_trl",
+            ),
+        ]
+
+    def save(self, *args, **kwargs):
+        # Mirror the TRL number to enforce constraint consistency
+        self.trl_number = self.trl.trl_number
+        super().save(*args, **kwargs)
