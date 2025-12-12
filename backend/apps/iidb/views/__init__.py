@@ -9,6 +9,7 @@ __all__ = [
     "PlantProgrammeRowDetailView",
     "TechnologyViewSet",
     "TechnologyRowDetailView",
+    "TRLViewSet",
     "StrategyViewSet",
     "StrategyRowDetailView",
     "ProcessViewSet",

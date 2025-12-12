@@ -11,6 +11,24 @@ class TRLLevel(models.IntegerChoices):
     TRL7 = 7, "TRL 7",
     TRL8 = 8, "TRL 8",
     TRL9 = 9, "TRL 9"
+
+class TRL(models.Model):
+    trl_number = models.PositiveSmallIntegerField(
+        choices=TRLLevel.choices,
+        verbose_name=_("TRL Number"),
+        null=False,
+        blank=False
+    )
+    trl_year = models.PositiveSmallIntegerField(verbose_name=_("TRL Year"), null=True, blank=True)
+    trl_cost = models.DecimalField(max_digits=14, decimal_places=2, verbose_name=_("TRL Cost"), null=True, blank=True)
+    
+    class Meta:
+        db_table = "trls"
+        verbose_name = _("TRL")
+        verbose_name_plural = _("TRLs")
+    
+    def __str__(self):
+        return f"TRL {self.trl_number}"
     
 class Technology(models.Model):
     technology_cluster = models.CharField(
@@ -61,27 +79,9 @@ class Technology(models.Model):
         null=True,
         blank=True,
     )
-    
-    trl1_year = models.PositiveSmallIntegerField(_("TRL1 Year"), null=True, blank=True)
-    trl2_year = models.PositiveSmallIntegerField(_("TRL2 Year"), null=True, blank=True)
-    trl3_year = models.PositiveSmallIntegerField(_("TRL3 Year"), null=True, blank=True)
-    trl4_year = models.PositiveSmallIntegerField(_("TRL4 Year"), null=True, blank=True)
-    trl5_year = models.PositiveSmallIntegerField(_("TRL5 Year"), null=True, blank=True)
-    trl6_year = models.PositiveSmallIntegerField(_("TRL6 Year"), null=True, blank=True)
-    trl7_year = models.PositiveSmallIntegerField(_("TRL7 Year"), null=True, blank=True)
-    trl8_year = models.PositiveSmallIntegerField(_("TRL8 Year"), null=True, blank=True)
-    trl9_year = models.PositiveSmallIntegerField(_("TRL9 Year"), null=True, blank=True)
-    
-    trl1_cost = models.DecimalField(_("TRL1 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl2_cost = models.DecimalField(_("TRL2 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl3_cost = models.DecimalField(_("TRL3 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl4_cost = models.DecimalField(_("TRL4 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl5_cost = models.DecimalField(_("TRL5 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl6_cost = models.DecimalField(_("TRL6 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl7_cost = models.DecimalField(_("TRL7 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl8_cost = models.DecimalField(_("TRL8 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    trl9_cost = models.DecimalField(_("TRL9 Cost"), max_digits=14, decimal_places=2, null=True, blank=True)
-    
+
+    trl = models.ForeignKey(TRL, on_delete=models.CASCADE, verbose_name=_("TRL"), null=True, blank=True)
+
     tech_cluster_dependencies = models.JSONField(
         default=list,
         verbose_name=_("Tech. Cluster Dependencies"),

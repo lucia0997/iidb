@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from ..models.technology import Technology
-from ..serializers.technology import TechnologySerializer, TechnologyRowSerializer
+from ..models.technology import Technology, TRL
+from ..serializers.technology import TechnologySerializer, TechnologyRowSerializer, TRLSerializer
 from .mixins import ColumnsMixin, parse_and_validate_columns
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -66,3 +66,16 @@ class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
             serializer = self.get_serializer(instance, only_field=only_field)
         
         return Response(serializer.data)
+
+class TRLViewSet(ColumnsMixin, viewsets.ModelViewSet):
+    """
+    ViewSet for TRL — includes automatic 'columns' endpoint from ColumnsMixin.
+    """
+    queryset = TRL.objects.all().order_by("trl_number")
+    serializer_class = TRLSerializer
+
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ["trl_number", "trl_year", "trl_cost"]
+    search_fields = ["trl_number", "trl_year", "trl_cost"]
+    ordering_fields = ["trl_number", "trl_year", "trl_cost"]

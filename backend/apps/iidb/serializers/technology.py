@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import empty
-from ..models import Technology
+from ..models import Technology, TRL
 
 
 class TechnologySerializer(serializers.ModelSerializer):
@@ -81,43 +81,13 @@ class TechnologySerializer(serializers.ModelSerializer):
         max_value=9
     )
 
-    trl1_year = serializers.IntegerField(
-        label=_("TRL1 Year"), required=False, allow_null=True)
-    trl2_year = serializers.IntegerField(
-        label=_("TRL2 Year"), required=False, allow_null=True)
-    trl3_year = serializers.IntegerField(
-        label=_("TRL3 Year"), required=False, allow_null=True)
-    trl4_year = serializers.IntegerField(
-        label=_("TRL4 Year"), required=False, allow_null=True)
-    trl5_year = serializers.IntegerField(
-        label=_("TRL5 Year"), required=False, allow_null=True)
-    trl6_year = serializers.IntegerField(
-        label=_("TRL6 Year"), required=False, allow_null=True)
-    trl7_year = serializers.IntegerField(
-        label=_("TRL7 Year"), required=False, allow_null=True)
-    trl8_year = serializers.IntegerField(
-        label=_("TRL8 Year"), required=False, allow_null=True)
-    trl9_year = serializers.IntegerField(
-        label=_("TRL9 Year"), required=False, allow_null=True)
-
-    trl1_cost = serializers.DecimalField(label=_(
-        "TRL1 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl2_cost = serializers.DecimalField(label=_(
-        "TRL2 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl3_cost = serializers.DecimalField(label=_(
-        "TRL3 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl4_cost = serializers.DecimalField(label=_(
-        "TRL4 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl5_cost = serializers.DecimalField(label=_(
-        "TRL5 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl6_cost = serializers.DecimalField(label=_(
-        "TRL6 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl7_cost = serializers.DecimalField(label=_(
-        "TRL7 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl8_cost = serializers.DecimalField(label=_(
-        "TRL8 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
-    trl9_cost = serializers.DecimalField(label=_(
-        "TRL9 Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True,)
+    trl = serializers.SlugRelatedField(
+        queryset=TRL.objects.all(),
+        slug_field='id',
+        label=_("TRL"),
+        allow_null=True,
+        required=False
+    )
 
     fom_type = serializers.CharField(
         label=_("FoM Type"),
@@ -153,24 +123,7 @@ class TechnologySerializer(serializers.ModelSerializer):
             "technology_name",
             "technology_description",
             "current_trl",
-            "trl1_year",
-            "trl2_year",
-            "trl3_year",
-            "trl4_year",
-            "trl5_year",
-            "trl6_year",
-            "trl7_year",
-            "trl8_year",
-            "trl9_year",
-            "trl1_cost",
-            "trl2_cost",
-            "trl3_cost",
-            "trl4_cost",
-            "trl5_cost",
-            "trl6_cost",
-            "trl7_cost",
-            "trl8_cost",
-            "trl9_cost",
+            "trl",
             "tech_cluster_dependencies",
             "fom_type",
             "fom_value_percent",
@@ -211,3 +164,12 @@ class TechnologyRowSerializer(serializers.ModelSerializer):
             for f in list(self.fields.keys()):
                 if f not in keep:
                     self.fields.pop(f)
+
+class TRLSerializer(serializers.ModelSerializer):
+    trl_number = serializers.IntegerField(label=_("TRL Number"), required=True)
+    trl_year = serializers.IntegerField(label=_("TRL Year"), required=False, allow_null=True)
+    trl_cost = serializers.DecimalField(label=_("TRL Cost"), max_digits=14, decimal_places=2, required=False, allow_null=True)
+
+    class Meta:
+        model = TRL
+        fields = ["id", "trl_number", "trl_year", "trl_cost"]
