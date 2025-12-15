@@ -2,7 +2,7 @@ import { lazy } from 'react';
 import { Routes, Route, Navigate, createBrowserRouter } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { AppRouter, ProtectedRoute } from '@df/utils';
-import { Page403, Page404 } from '@df/ui';
+import { LoadingScreen, Page403, Page404 } from '@df/ui';
 import { LoginPage } from '../pages/LoginPage';
 import { routeConfig } from './routeConfig';
 import { UserPage } from '../pages/UserPage';

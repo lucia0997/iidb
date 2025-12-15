@@ -1,2 +1,2 @@
 export { default as ResultTable } from './ResultsTable'
-export type {  Row, ColState } from './ResultTable.types'
+export type {  Row, ColObj, ColState, ResultsRouteState } from './ResultTable.types'

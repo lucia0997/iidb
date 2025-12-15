@@ -7,7 +7,7 @@ export async function getTechnologyOptions(api: AxiosHttpClient): Promise<Techno
     return data;
 }
 
-export async function getProgrammeRows(
+export async function getTechnologyRows(
     api: AxiosHttpClient,
     selectedKeys: string[],
     pageSize = 200
@@ -33,7 +33,7 @@ export async function getProgrammeRows(
     return { rows, count}
 }
 
-export async function getProgrammeRowDetail(
+export async function getTechnologyRowDetail(
     api: AxiosHttpClient,
     rowId: number | string
 ): Promise<Row> {

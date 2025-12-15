@@ -1,4 +1,5 @@
 import { RawFacetOption } from "../../components/CustomComponents/FacetSelectorCard";
+import { ColState } from "../../components/Features/ResultsTable";
 
 export type FacetKey = 'plants_programme' | 'technologies' | 'strategy' | 'projects' | 'processes';
 
@@ -13,3 +14,5 @@ export type FacetConfig = {
         isError: boolean;
       };
 }
+
+export type SelectedByTable = Record<FacetKey, ColState[]>
