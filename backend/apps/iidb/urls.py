@@ -39,6 +39,11 @@ urlpatterns = [
         "projects/rows/<int:pk>/",
         ProjectRowDetailView.as_view(),
         name="projects-row-detail"
+    ),
+    path(
+        "trls/rows/<int:pk>/",
+        TRLViewSet.as_view(),
+        name="trls-row-detail"
     )
 ]
 
