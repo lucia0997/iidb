@@ -4,10 +4,23 @@ import { useCallback, useMemo, useState } from 'react';
 import PlantsProgrammes from '../../components/Features/PlantsProgrammes/PlantsProgrammes';
 import { useNavigate } from 'react-router-dom';
 import './industrialDB.css';
-import { FacetKey, FacetState } from './IndustrialDB.types';
+import { FacetConfig, FacetKey, FacetState, SelectedByTable } from './IndustrialDB.types';
+import { useProgrammeOptions } from '../../hooks/PlantsProgrammes/useProgrammeOptions';
+import { FacetSelectorCard } from '../../components/CustomComponents/FacetSelectorCard';
+import { useTechnologies } from '../../hooks/Technologies/useTechnologies';
 
-
-const ROOT = import.meta.env.VITE_ROOT_PATH ?? '';
+const FACETS_CONFIG: FacetConfig[] = [
+  {
+    key: 'plants_programme',
+    title: 'Plants / Programmes',
+    useOptionsHook: useProgrammeOptions
+  },
+  {
+    key: 'technologies',
+    title: 'Technologies',
+    useOptionsHook: useTechnologies
+  },
+]
 
 const IndustrialDB = () => {
   const navigate = useNavigate();
@@ -28,7 +41,7 @@ const IndustrialDB = () => {
   );
 
   const onLabels = useCallback((map: Record<string, string>) => {
-    setLabelMap((prev) => ({...prev, ...map}))
+    setLabelMap((prev) => ({ ...prev, ...map }))
   }, [])
 
   const selectedKeys = useMemo(() => {
@@ -57,6 +70,17 @@ const IndustrialDB = () => {
   const handleApply = useCallback(() => {
     if (!canApply) return;
 
+    const selectedByTable = (Object.keys(facets) as FacetKey[]).reduce((acc, tableKey) => {
+       acc[tableKey] = facets[tableKey].map((key) => ({
+        key,
+        label: labelMap[key] ?? key,
+       }));
+       return acc;
+    }, {} as SelectedByTable)
+
+    console.log('selectedByTable', selectedByTable);
+    
+
     const params = new URLSearchParams();
     params.set('columns', selectedKeys.join(','));
 
@@ -65,8 +89,9 @@ const IndustrialDB = () => {
       label: labelMap[key] ?? key,
     }))
 
-    navigate(`${ROOT}/industrial-database/view?${params}`, {
-      state: { columns: columnsState },
+    navigate(`/industrial-database/view?${params}`, {
+      // state: { columns: columnsState },
+      state: {selectedByTable },
       replace: false,
     });
   }, [canApply, navigate, selectedKeys]);
@@ -100,10 +125,20 @@ const IndustrialDB = () => {
             gap: 2.5,
           }}
         >
+          {FACETS_CONFIG.map((facet) => (
+            <FacetSelectorCard
+              key={facet.key}
+              title={facet.title}
+              value={facets[facet.key]}
+              onChange={setFacet(facet.key)}
+              onLabels={onLabels}
+              useOptionsHook={facet.useOptionsHook}
+            />
+          ))}
+          {/* <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
           <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
           <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
+          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/> */}
         </Box>
       </Box>
       <Box className="footerBtns">

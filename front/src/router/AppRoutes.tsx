@@ -2,7 +2,7 @@ import { lazy } from 'react';
 import { Routes, Route, Navigate, createBrowserRouter } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { AppRouter, ProtectedRoute } from '@df/utils';
-import { Page403, Page404 } from '@df/ui';
+import { LoadingScreen, Page403, Page404 } from '@df/ui';
 import { LoginPage } from '../pages/LoginPage';
 import { routeConfig } from './routeConfig';
 import { UserPage } from '../pages/UserPage';
@@ -20,13 +20,12 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route
+       <Route
         element={
-          <ProtectedRoute>
+          <ProtectedRoute LoadingFallback={LoadingScreen} loginPath='/login'>
             <AppLayout />
           </ProtectedRoute>
-        }
-      >
+        }>
         <Route path="/technology-roadmappping" element={<Technology />} />
         <Route path="/industrial-database" element={<IndustrialDB />} />
         <Route path="/industrial-database/view" element={<ResultsTable />} />
