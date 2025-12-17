@@ -1,6 +1,6 @@
 import type { FacetKey } from '../pages/IndustrialDB';
 import { getProcessRows } from './ProcessService/process.service';
-import { getProgrammeRows } from './ProgrammesService/programmes.service';
+import { getProgrammeRows } from './ProgrammeService/programmes.service';
 import { getProjectsRows } from './ProjectsService/projects.service';
 import { getStrategiesRows } from './StrategiesService/strategies.service';
 import { getTechnologyRows } from './TechnologiesService/technologies.service';

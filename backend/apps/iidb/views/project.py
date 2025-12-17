@@ -17,7 +17,7 @@ class ProjectViewSet(ColumnsMixin, viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["project_id", "project_name", "project_description", "programmes", "synergies", "project_start_date", "project_end_date", "project_total_cost"]
+    filterset_fields = ["project_id", "project_name", "project_description", "synergies", "project_start_date", "project_end_date", "project_total_cost"]
     search_fields = ["project_id", "project_name", "project_description", "programmes", "synergies", "project_start_date", "project_end_date", "project_total_cost"]
     ordering_fields = ["project_id", "project_name", "project_description", "programmes", "synergies", "project_start_date", "project_end_date", "project_total_cost"]
     
