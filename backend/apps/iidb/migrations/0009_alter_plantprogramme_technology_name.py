@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 to='iidb.technology',
                 to_field='technology_name',
-                verbose_name='Technology Name'
+                verbose_name='Technology Name',
+                null=True,
+                blank=True,
             ),
         ),
     ]

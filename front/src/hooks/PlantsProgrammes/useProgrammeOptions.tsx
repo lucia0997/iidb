@@ -1,12 +1,8 @@
-import { useApiClient } from '@df/utils';
-import { useQuery } from '@tanstack/react-query';
-import { getProgrammeOptions } from '../../services/programmes.service';
+import { getProgrammeOptions } from '../../services/ProgrammeService/programmes.service';
+import { makeUseFacetOptions } from '../FacetOptions/useFacetOptions';
 
-export function useProgrammeOptions() {
-  const api = useApiClient();
-  
-  return useQuery({
-    queryKey: ['programme-options'],
-    queryFn: () => getProgrammeOptions(api),
-  });
-}
+export const useProgrammeOptions = makeUseFacetOptions(
+  'programme-options',
+  getProgrammeOptions
+
+)

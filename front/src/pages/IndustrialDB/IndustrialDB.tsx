@@ -1,13 +1,15 @@
 import { Box } from '@mui/material';
 import { Button, Typography } from '@airbus/components-react';
 import { useCallback, useMemo, useState } from 'react';
-import PlantsProgrammes from '../../components/Features/PlantsProgrammes/PlantsProgrammes';
 import { useNavigate } from 'react-router-dom';
 import './industrialDB.css';
 import { FacetConfig, FacetKey, FacetState, SelectedByTable } from './IndustrialDB.types';
 import { useProgrammeOptions } from '../../hooks/PlantsProgrammes/useProgrammeOptions';
 import { FacetSelectorCard } from '../../components/CustomComponents/FacetSelectorCard';
 import { useTechnologies } from '../../hooks/Technologies/useTechnologies';
+import { useProcessesOptions } from '../../hooks/Processes/useProcessesOptions';
+import { useProjectsOptions } from '../../hooks/Projects/useProjectsOptions';
+import { useStrategiesOptions } from '../../hooks/Strategies/useStrategiesOptions';
 
 const FACETS_CONFIG: FacetConfig[] = [
   {
@@ -20,6 +22,21 @@ const FACETS_CONFIG: FacetConfig[] = [
     title: 'Technologies',
     useOptionsHook: useTechnologies
   },
+  {
+    key: 'processes',
+    title: 'Processes',
+    useOptionsHook: useProcessesOptions
+  },
+  {
+    key: 'projects',
+    title: 'Projects',
+    useOptionsHook: useProjectsOptions
+  },
+  {
+    key: 'strategies',
+    title: 'Strategies',
+    useOptionsHook: useStrategiesOptions
+  },
 ]
 
 const IndustrialDB = () => {
@@ -28,7 +45,7 @@ const IndustrialDB = () => {
   const [facets, setFacets] = useState<FacetState>({
     plants_programme: [],
     technologies: [],
-    strategy: [],
+    strategies: [],
     projects: [],
     processes: [],
   });
@@ -57,7 +74,7 @@ const IndustrialDB = () => {
     setFacets({
       plants_programme: [],
       technologies: [],
-      strategy: [],
+      strategies: [],
       projects: [],
       processes: [],
     });

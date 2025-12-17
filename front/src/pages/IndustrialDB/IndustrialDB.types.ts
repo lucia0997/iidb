@@ -1,7 +1,7 @@
 import { RawFacetOption } from "../../components/CustomComponents/FacetSelectorCard";
 import { ColState } from "../../components/Features/ResultsTable";
 
-export type FacetKey = 'plants_programme' | 'technologies' | 'strategy' | 'projects' | 'processes';
+export type FacetKey = 'plants_programme' | 'technologies' | 'strategies' | 'projects' | 'processes';
 
 export type FacetState = Record<FacetKey, string[]>;
 

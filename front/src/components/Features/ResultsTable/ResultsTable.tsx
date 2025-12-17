@@ -40,7 +40,7 @@ const ResultsTable = () => {
   const [queryByTable, setQueryByTable] = useState<Record<FacetKey, QueryState>>({
     plants_programme: defaultQuery,
     technologies: defaultQuery,
-    strategy: defaultQuery,
+    strategies: defaultQuery,
     projects: defaultQuery,
     processes: defaultQuery,
   });

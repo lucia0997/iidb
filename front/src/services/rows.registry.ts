@@ -1,6 +1,9 @@
 import type { FacetKey } from '../pages/IndustrialDB';
-import { getProgrammeRows } from './programmes.service';
-import { getTechnologyRows } from './technologies.service';
+import { getProcessRows } from './ProcessService/process.service';
+import { getProgrammeRows } from './ProgrammeService/programmes.service';
+import { getProjectsRows } from './ProjectsService/projects.service';
+import { getStrategiesRows } from './StrategiesService/strategies.service';
+import { getTechnologyRows } from './TechnologiesService/technologies.service';
 
 export type GetRowsFn = (
   api: any,
@@ -14,7 +17,7 @@ export type GetRowsFn = (
 export const rowsServiceByTable: Record<FacetKey, GetRowsFn> = {
   plants_programme: getProgrammeRows,
   technologies: getTechnologyRows,
-  strategy: async () => ({ rows: [], count: 0 }),
-  projects: async () => ({ rows: [], count: 0 }),
-  processes: async () => ({ rows: [], count: 0 }),
+  strategies: getStrategiesRows,
+  projects: getProjectsRows,
+  processes:getProcessRows,
 };

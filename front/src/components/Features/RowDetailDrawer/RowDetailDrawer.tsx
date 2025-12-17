@@ -5,7 +5,7 @@ import { Box, CircularProgress, Grid, Stack } from '@mui/material';
 import { CloseOutlined } from '@mui/icons-material';
 import './rowDetailDrawer.css'
 import { useApiClient } from '@df/utils';
-import { getProgrammeOptions, getProgrammeRowDetail } from '../../../services/programmes.service';
+import { getProgrammeOptions, getProgrammeRowDetail } from '../../../services/ProgrammeService/programmes.service';
 
 //TODO: review let use
 
