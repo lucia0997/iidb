@@ -13,6 +13,7 @@ export type FacetConfig = {
         isLoading: boolean;
         isError: boolean;
       };
+    color?: string
 }
 
 export type SelectedByTable = Record<FacetKey, ColState[]>

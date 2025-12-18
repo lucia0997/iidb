@@ -9,6 +9,7 @@ const FacetSelectorCard = ({
   disabled,
   onLabels,
   useOptionsHook,
+  color,
 }: FacetSelectorCardProps) => {
     
   const { data, isLoading, isError } = useOptionsHook();
@@ -25,6 +26,7 @@ const FacetSelectorCard = ({
     <FacetCard
       title={title}
       options={options}
+      color={color}
       value={value}
       onChange={onChange}
       disabled={disabled || isLoading}

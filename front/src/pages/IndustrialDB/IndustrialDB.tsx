@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import { Button, Typography } from '@airbus/components-react';
+import { Box, Tooltip } from '@mui/material';
+import { Button, IconButton, Typography } from '@airbus/components-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './industrialDB.css';
@@ -10,34 +10,40 @@ import { useTechnologies } from '../../hooks/Technologies/useTechnologies';
 import { useProcessesOptions } from '../../hooks/Processes/useProcessesOptions';
 import { useProjectsOptions } from '../../hooks/Projects/useProjectsOptions';
 import { useStrategiesOptions } from '../../hooks/Strategies/useStrategiesOptions';
+import { ClearAll } from '@mui/icons-material';
 
 const FACETS_CONFIG: FacetConfig[] = [
   {
     key: 'plants_programme',
     title: 'Plants / Programmes',
-    useOptionsHook: useProgrammeOptions
+    useOptionsHook: useProgrammeOptions,
+    color: '#a51890',
   },
   {
     key: 'technologies',
     title: 'Technologies',
-    useOptionsHook: useTechnologies
+    useOptionsHook: useTechnologies,
+    color: '#e4022b',
   },
   {
     key: 'processes',
     title: 'Processes',
-    useOptionsHook: useProcessesOptions
+    useOptionsHook: useProcessesOptions,
+    color: '#0285ad',
   },
   {
     key: 'projects',
     title: 'Projects',
-    useOptionsHook: useProjectsOptions
+    useOptionsHook: useProjectsOptions,
+    color: '#ffbf00',
   },
   {
     key: 'strategies',
     title: 'Strategies',
-    useOptionsHook: useStrategiesOptions
+    useOptionsHook: useStrategiesOptions,
+    color: '#83be00',
   },
-]
+];
 
 const IndustrialDB = () => {
   const navigate = useNavigate();
@@ -58,8 +64,8 @@ const IndustrialDB = () => {
   );
 
   const onLabels = useCallback((map: Record<string, string>) => {
-    setLabelMap((prev) => ({ ...prev, ...map }))
-  }, [])
+    setLabelMap((prev) => ({ ...prev, ...map }));
+  }, []);
 
   const selectedKeys = useMemo(() => {
     const all = Object.values(facets).flat();
@@ -67,8 +73,6 @@ const IndustrialDB = () => {
   }, [facets]);
 
   const selectedCount = selectedKeys.length;
-
-  console.log('selectedKeys', selectedKeys);
 
   const clearAll = useCallback(() => {
     setFacets({
@@ -88,27 +92,18 @@ const IndustrialDB = () => {
     if (!canApply) return;
 
     const selectedByTable = (Object.keys(facets) as FacetKey[]).reduce((acc, tableKey) => {
-       acc[tableKey] = facets[tableKey].map((key) => ({
+      acc[tableKey] = facets[tableKey].map((key) => ({
         key,
         label: labelMap[key] ?? key,
-       }));
-       return acc;
-    }, {} as SelectedByTable)
-
-    console.log('selectedByTable', selectedByTable);
-    
+      }));
+      return acc;
+    }, {} as SelectedByTable);
 
     const params = new URLSearchParams();
     params.set('columns', selectedKeys.join(','));
 
-    const columnsState = selectedKeys.map((key) => ({
-      key,
-      label: labelMap[key] ?? key,
-    }))
-
     navigate(`/industrial-database/view?${params}`, {
-      // state: { columns: columnsState },
-      state: {selectedByTable },
+      state: { selectedByTable },
       replace: false,
     });
   }, [canApply, navigate, selectedKeys]);
@@ -128,17 +123,39 @@ const IndustrialDB = () => {
         <Typography variant="h6" className="tableSelect">
           Select Parameters to be visualized:
         </Typography>
-        <Box className="headerInfo">
-          <span>{headerInfo}</span>
-          <Button type="button" onClick={clearAll} className="clearAllBtn">
-            Clear all
-          </Button>
-        </Box>
+        {selectedCount > 0 ? (
+          <Box className="headerInfo">
+            <Typography variant="large" style={{ color: 'green' }}>
+              {headerInfo}
+            </Typography>
+            <Tooltip
+              title="Clear all"
+              slotProps={{
+                popper: {
+                  modifiers: [
+                    {
+                      name: 'offset',
+                      options: {
+                        offset: [0, -14],
+                      },
+                    },
+                  ],
+                },
+              }}
+            >
+              <IconButton size="small" onClick={clearAll}>
+                <ClearAll fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ) : (
+          ''
+        )}
         <Box
           className=""
           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: 2.5,
           }}
         >
@@ -150,12 +167,9 @@ const IndustrialDB = () => {
               onChange={setFacet(facet.key)}
               onLabels={onLabels}
               useOptionsHook={facet.useOptionsHook}
+              color={facet.color}
             />
           ))}
-          {/* <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/>
-          <PlantsProgrammes value={facets.plants_programme} onChange={setFacet('plants_programme')} onLabels={onLabels}/> */}
         </Box>
       </Box>
       <Box className="footerBtns">
