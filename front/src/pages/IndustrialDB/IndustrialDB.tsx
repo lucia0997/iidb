@@ -98,6 +98,7 @@ const IndustrialDB = () => {
       }));
       return acc;
     }, {} as SelectedByTable);
+    console.log('selectedBy', selectedByTable);
 
     const params = new URLSearchParams();
     params.set('columns', selectedKeys.join(','));
@@ -147,6 +148,9 @@ const IndustrialDB = () => {
                 <ClearAll fontSize="small" />
               </IconButton>
             </Tooltip>
+            <Button type="button" onClick={handleApply} disabled={!canApply} className="applyBtn">
+              Apply Filters
+            </Button>
           </Box>
         ) : (
           ''

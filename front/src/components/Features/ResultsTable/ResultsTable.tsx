@@ -130,8 +130,8 @@ const ResultsTable = () => {
 
         return (
           <Box key={tableKey} className="tableContainer">
-            <Typography variant="medium">{tableKey}</Typography>
-            <Typography variant="subH6">{`${t('selectedColumns')} ${cols.map((col) => col.label).join(', ')}`}</Typography>
+            <Typography variant="medium" sx={{ mb: 4 }}>{tableKey}</Typography>
+            {/* <Typography variant="subH6">{`${t('selectedColumns')} ${cols.map((col) => col.label).join(', ')}`}</Typography> */}
             {q.isLoading && <p>Loading...</p>}
             {q.isError && <p>{(q.error as any)?.response?.data?.detail ?? 'Error loading data'}</p>}
             {!q.isLoading && !q.isError && (
