@@ -26,7 +26,7 @@ const ResultsTable = () => {
   const tablesToShow = useMemo(
     () =>
       (Object.keys(selectedByTable) as FacetKey[]).filter(
-        (k) => (selectedByTable[k]?.length ?? 0) > 0
+        (k) => (selectedByTable[k]?.columns?.length ?? 0) > 0
       ),
     [selectedByTable]
   );
@@ -57,7 +57,7 @@ const ResultsTable = () => {
   const normalizedByTable = useMemo(() => {
     return tablesToShow.reduce(
       (acc, tableKey) => {
-        const cols = selectedByTable[tableKey] ?? [];
+        const cols = selectedByTable[tableKey]?.columns ?? [];
         const normalizedCols: ColObj[] = cols.map((c) =>
           typeof c === 'string' ? { key: c, label: c } : c
         );
@@ -130,8 +130,7 @@ const ResultsTable = () => {
 
         return (
           <Box key={tableKey} className="tableContainer">
-            <Typography variant="medium" sx={{ mb: 4 }}>{tableKey}</Typography>
-            {/* <Typography variant="subH6">{`${t('selectedColumns')} ${cols.map((col) => col.label).join(', ')}`}</Typography> */}
+            <Typography variant="medium" sx={{ mb: 4 }}>{selectedByTable[tableKey]?.title ?? tableKey}</Typography>
             {q.isLoading && <p>Loading...</p>}
             {q.isError && <p>{(q.error as any)?.response?.data?.detail ?? 'Error loading data'}</p>}
             {!q.isLoading && !q.isError && (

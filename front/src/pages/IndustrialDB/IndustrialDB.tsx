@@ -92,10 +92,15 @@ const IndustrialDB = () => {
     if (!canApply) return;
 
     const selectedByTable = (Object.keys(facets) as FacetKey[]).reduce((acc, tableKey) => {
-      acc[tableKey] = facets[tableKey].map((key) => ({
-        key,
-        label: labelMap[key] ?? key,
-      }));
+      const facetConfig = FACETS_CONFIG.find((f) => f.key === tableKey);
+
+      acc[tableKey] = {
+        title: facetConfig?.title ?? tableKey,
+        columns: facets[tableKey].map((colKey) => ({
+          key: colKey,
+          label: labelMap[colKey] ?? colKey,
+        })),
+      };
       return acc;
     }, {} as SelectedByTable);
     console.log('selectedBy', selectedByTable);

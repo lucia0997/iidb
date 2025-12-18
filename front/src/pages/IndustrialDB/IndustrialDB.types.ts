@@ -16,4 +16,9 @@ export type FacetConfig = {
     color?: string
 }
 
-export type SelectedByTable = Record<FacetKey, ColState[]>
+export type SelectedTableState = {
+  title: string;
+  columns: ColState[];
+}
+
+export type SelectedByTable = Record<FacetKey, SelectedTableState>
