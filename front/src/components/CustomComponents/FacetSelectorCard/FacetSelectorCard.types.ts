@@ -14,4 +14,5 @@ export type FacetSelectorCardProps = {
     isLoading: boolean;
     isError: boolean;
   };
+  color?: string;
 };

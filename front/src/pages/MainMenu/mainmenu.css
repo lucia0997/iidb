@@ -87,3 +87,14 @@
   transform: translateY(-3px);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
+.create {
+  background-color: #0285ad;
+  color: white;
+  border-color: #1F5D79;
+}
+
+.create:hover {
+  background-color: #6CA9C5;
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
