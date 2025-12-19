@@ -20,6 +20,9 @@ const MainMenu: FC = () => {
         <Link to="project-roadmapping" className="button project">
           Project Roadmapping
         </Link>
+        <Link to="create-database" className="button create">
+          Industrial DataBase Create
+        </Link>
       </div>
     </div>
   );

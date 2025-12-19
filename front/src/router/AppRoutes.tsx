@@ -15,6 +15,7 @@ const Technology = lazy(() => import('../pages/Technology/Technology'));
 const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'));
 const Project = lazy(() => import('../pages/Project/Project'));
 const ResultsTable = lazy(() => import('../components/Features/ResultsTable/ResultsTable'))
+const CreateDB = lazy(() => import('../pages/CreateDB/CreateDB'))
 
 export default function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export default function AppRoutes() {
         <Route path="/industrial-database" element={<IndustrialDB />} />
         <Route path="/industrial-database/view" element={<ResultsTable />} />
         <Route path="/project-roadmapping" element={<Project />} />
+        <Route path="/create-database" element={<CreateDB />} />
         <Route
           path="/admin"
           element={
