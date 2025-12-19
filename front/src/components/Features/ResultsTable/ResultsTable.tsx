@@ -123,6 +123,13 @@ const ResultsTable = () => {
           accessorKey: String(key),
           header: String(label ?? key),
           size: 200,
+          Cell: ({ cell }) => {
+            const value = cell.getValue<unknown>();
+
+            if (Array.isArray(value)) return value.join(', ');
+            if (value == null) return ''; 
+            return String(value)
+          }
         }));
 
         const rows = q.data?.rows ?? [];
