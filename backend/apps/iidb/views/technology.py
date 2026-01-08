@@ -1,16 +1,13 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from ..models.technology import Technology, TRL
-from ..serializers.technology import TechnologySerializer, TechnologyRowSerializer, TRLSerializer
+from ..serializers.technology import TechnologySerializer, TechnologyRowSerializer, TRLSerializer, TechnologyWithTRLsSerializer
 from .mixins import ColumnsMixin, parse_and_validate_columns
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 
-
 class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
-    """
-    ViewSet for Technology — includes automatic 'columns' and 'rows' endpoints from ColumnsMixin.
-    """
     queryset = Technology.objects.all().order_by("technology_name")
     serializer_class = TechnologySerializer
 
@@ -18,6 +15,50 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
     filterset_fields = ["technology_cluster", "current_trl", "fom_type"]
     search_fields = ["technology_name", "technology_cluster", "coc_expert_name", "product_domains", "technology_domains", "ac_application", "targeted_programmes"]
     ordering_fields = ["technology_name", "technology_cluster", "current_trl", "fom_value_percent"]
+
+    @action(detail=False, methods=["GET"], url_path="rows")
+    def rows(self, request):
+        """
+        GET /technologies/rows/
+
+        - Si ?trls=true: usa TechnologyWithTRLsSerializer y devuelve todas las columnas
+          de Technology + trlX_year / trlX_cost calculadas.
+        - Si no: delega en la implementación genérica de ColumnsMixin (proyección por columnas).
+        """
+        trls_param = request.query_params.get("trls")
+        if trls_param is not None and trls_param.lower() in ("true", "1", "yes"):
+            # Validamos que haya columnas pedidas (opcional, igual que ColumnsMixin)
+            raw = request.query_params.get("columns", "")
+            requested = [c.strip() for c in raw.split(",") if c.strip()]
+            if not requested:
+                return Response(
+                    {"detail": "You must select at least one column."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Usamos el serializer extendido y prefetch de TRLs para evitar N+1
+            qs = self.filter_queryset(
+                self.get_queryset().prefetch_related("trls")
+            )
+
+            page = self.paginate_queryset(qs)
+            serializer_class = TechnologyWithTRLsSerializer
+
+            if page is not None:
+                serializer = serializer_class(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = serializer_class(qs, many=True)
+            return Response(serializer.data)
+
+        # Comportamiento por defecto: lógica genérica de ColumnsMixin
+        return ColumnsMixin.rows(self, request)
+
+    def get_serializer_class(self):
+        trls_param = self.request.query_params.get("trls")
+        if trls_param is not None and trls_param.lower() in ("true", "1", "yes"):
+            return TechnologyWithTRLsSerializer
+        return TechnologySerializer
     
 class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
     """
