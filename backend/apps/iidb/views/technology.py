@@ -15,13 +15,13 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
     serializer_class = TechnologySerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["technology_cluster", "current_trl", "fom_type"]
-    search_fields = ["technology_name", "technology_cluster", "coc_expert_name", "product_domains", "technology_domains", "ac_application", "targeted_programmes"]
-    ordering_fields = ["technology_name", "technology_cluster", "current_trl", "fom_value_percent"]
+    filterset_fields = ["current_trl", "fom_type"]
+    search_fields = ["technology_name", "product_domains", "technology_domains", "ac_application", "targeted_programmes"]
+    ordering_fields = ["technology_name", "current_trl", "fom_value_percent"]
     
 class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
     """
-    GET /technologies/rows/<pk>/?columns=technology_name,technology_cluster,current_trl,...
+    GET /technologies/rows/<pk>/?columns=technology_name,product_domains,current_trl,...
     Returns ONLY the requested columns for a specific row.
     """
     queryset = Technology.objects.all()

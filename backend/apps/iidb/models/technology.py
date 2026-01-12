@@ -28,11 +28,18 @@ class TRL(models.Model):
 
 
 class Technology(models.Model):
-    technology_cluster = models.CharField(max_length=255,verbose_name=_("Technology Cluster"))    
-    coc_expert_name = models.CharField(max_length=255, verbose_name=_("CoC Expert Name"), blank=True)    
+    physical_technology_cluster = models.CharField(
+        max_length=255,
+        verbose_name=_("Physical Technology Cluster"),
+        blank=True,
+    )
+    digital_technology_cluster = models.CharField(
+        max_length=255,
+        verbose_name=_("Digital Technology Cluster"),
+        blank=True,
+    )
     product_domains = models.CharField(max_length=255, verbose_name=_("Product Domains"), blank=True)
     technology_domains = models.CharField(max_length=255, verbose_name=_("Technology Domains"), blank=True)
-    tdm_names = models.JSONField(default=list, verbose_name=_("TDM Name"), help_text=_("List of TMD names"), blank=True)
     technology_name = models.CharField(max_length=255, unique=True, verbose_name=_("Technology Name"))
     technology_description = models.TextField(verbose_name=_("Technology Description"), blank=True)
     current_trl = models.PositiveSmallIntegerField(verbose_name=_("Current TRL (1-9)"), choices=TRLLevel.choices, null=True, blank=True)

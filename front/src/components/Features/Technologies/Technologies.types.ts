@@ -1,11 +1,10 @@
 import { Row } from "../ResultsTable";
 
 export type TechnologyColumnOptionKey = 
-            "technology_cluster" |
-            "coc_expert_name" |
+            "physical_technology_cluster" |
+            "digital_technology_cluster" |
             "product_domains" |
             "technology_domains" |
-            "tdm_names" |
             "technology_name" |
             "technology_description" |
             "current_trl" |
