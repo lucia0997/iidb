@@ -90,6 +90,54 @@ class TechnologySerializer(serializers.ModelSerializer):
             self._set_trls(instance, trls)
         return instance
 
+class TechnologyWithTRLsSerializer(TechnologySerializer):
+    """
+    Serializer especial para ?trls=true.
+    Devuelve:
+      - Todas las columnas de Technology
+      - 18 columnas adicionales: trl1_year, trl1_cost, ..., trl9_year, trl9_cost
+    Rellenando a partir de los TRLs relacionados (Technology.trls).
+    """
+
+    class Meta(TechnologySerializer.Meta):
+        # Partimos de los campos base y añadimos los 18 campos TRL
+        fields = TechnologySerializer.Meta.fields + [
+            "trl1_year",
+            "trl1_cost",
+            "trl2_year",
+            "trl2_cost",
+            "trl3_year",
+            "trl3_cost",
+            "trl4_year",
+            "trl4_cost",
+            "trl5_year",
+            "trl5_cost",
+            "trl6_year",
+            "trl6_cost",
+            "trl7_year",
+            "trl7_cost",
+            "trl8_year",
+            "trl8_cost",
+            "trl9_year",
+            "trl9_cost",
+        ]
+
+    def to_representation(self, instance: Technology):
+        """
+        Partimos de la representación normal y añadimos las columnas
+        trlX_year / trlX_cost calculadas en un solo sitio.
+        """
+        data = super().to_representation(instance)
+
+        # Construimos un diccionario {trl_number: trl} una sola vez
+        trls_by_number = {trl.trl_number: trl for trl in instance.trls.all()}
+
+        for number in range(1, 10):
+            trl = trls_by_number.get(number)
+            data[f"trl{number}_year"] = trl.trl_year if trl else None
+            data[f"trl{number}_cost"] = trl.trl_cost if trl else None
+
+        return data
 
 class TechnologyRowSerializer(serializers.ModelSerializer):
     class Meta:

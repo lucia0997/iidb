@@ -16,8 +16,16 @@ export async function getTechnologyRows(
         return { rows: [], count: 0 }
     }
 
+    // Si en el front se ha seleccionado la columna "trls" en la tabla Technology,
+    // añadimos el parámetro ?trls=true para activar el serializer especial en el backend.
+    const hasTrlsColumn = selectedKeys.includes('trls');
+
     const { data } = await api.get<Row[] | TechnologiesRowsApiResponse>('/technologies/rows/', {
-        params: { columns: selectedKeys.join(','), page_size: pageSize},
+        params: {
+            columns: selectedKeys.join(','),
+            page_size: pageSize,
+            ...(hasTrlsColumn ? { trls: true } : {}),
+        },
     });
 
     if (Array.isArray(data)) {
