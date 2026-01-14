@@ -64,7 +64,7 @@ DATABASES = {
         "HOST": DB_HOST,
         "PORT": DB_PORT,
         "OPTIONS": {
-            "options": f"-c search_path={DB_SCHEMA},public"
+            "options": f"-c search_path={DB_SCHEMA}"
         },
     }
 }

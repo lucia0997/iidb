@@ -100,27 +100,10 @@ class TechnologyWithTRLsSerializer(TechnologySerializer):
     """
 
     class Meta(TechnologySerializer.Meta):
-        # Partimos de los campos base y añadimos los 18 campos TRL
-        fields = TechnologySerializer.Meta.fields + [
-            "trl1_year",
-            "trl1_cost",
-            "trl2_year",
-            "trl2_cost",
-            "trl3_year",
-            "trl3_cost",
-            "trl4_year",
-            "trl4_cost",
-            "trl5_year",
-            "trl5_cost",
-            "trl6_year",
-            "trl6_cost",
-            "trl7_year",
-            "trl7_cost",
-            "trl8_year",
-            "trl8_cost",
-            "trl9_year",
-            "trl9_cost",
-        ]
+        # Usamos exactamente los mismos campos base que TechnologySerializer.
+        # Las columnas TRL (trlX_year / trlX_cost) se añaden solo en la representación
+        # para no romper el mapeo automático de ModelSerializer.
+        fields = TechnologySerializer.Meta.fields
 
     def to_representation(self, instance: Technology):
         """
