@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from .technology import Technology
 
 class PlantProgramme(models.Model):
-    technology_name = models.ForeignKey(Technology, on_delete=models.CASCADE, to_field='technology_name', verbose_name=_("Technology Name"))
+    technology_name = models.ForeignKey(Technology, on_delete=models.CASCADE, to_field='technology_name', verbose_name=_("Technology Name"), default=None)
     program = models.JSONField(default=list, verbose_name=_("Program"), help_text=_("List of technology-related programs"))
     business = models.CharField(max_length=255, verbose_name=_("Business"))
     site = models.CharField(max_length=255, verbose_name=_("Site"))
