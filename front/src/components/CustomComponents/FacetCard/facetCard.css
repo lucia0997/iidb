@@ -1,0 +1,6 @@
+.facetCardContainer {
+    border-radius: 4;
+    border: 1px solid #E5E7EB;
+    overflow: hidden;
+    background-color: beige;
+}

@@ -7,7 +7,7 @@ __pycache__/
 notebooks/.ipynb_checkpoints/
 
 # Environments
-.env
+#.env
 .venv/
 venv/
 env/
@@ -63,3 +63,5 @@ dist-ssr
 
 # Others
 __DOCS__/*
+front/yarn.lock
+front/package-lock.json
