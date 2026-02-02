@@ -105,3 +105,83 @@ export async function checkTechnologyName(
     });
     return data;
 }
+
+export interface Technology extends CreateTechnologyPayload {
+    id: number;
+    trls?: Array<{
+        id: number;
+        trl_number: number;
+        trl_year?: number;
+        trl_cost?: number;
+    }>;
+}
+
+export async function getTechnology(
+    api: AxiosHttpClient,
+    id: number | string
+): Promise<Technology> {
+    const { data } = await api.get<Technology>(`/technologies/${id}/`);
+    return data;
+}
+
+export async function updateTechnology(
+    api: AxiosHttpClient,
+    id: number | string,
+    payload: CreateTechnologyPayload
+): Promise<{ id: number; technology: Technology }> {
+    const { data } = await api.put<Technology>(`/technologies/${id}/`, payload);
+    return {
+        id: typeof id === 'string' ? parseInt(id, 10) : id,
+        technology: data,
+    };
+}
+
+export interface TechnologyListItem {
+    id: number;
+    technology_name: string;
+}
+
+export async function getTechnologiesList(
+    api: AxiosHttpClient
+): Promise<TechnologyListItem[]> {
+    try {
+        // Intentar primero con el endpoint simple
+        try {
+            const { data } = await api.get<TechnologyListItem[]>('/technologies/list-simple/');
+            if (Array.isArray(data)) {
+                return data;
+            }
+        } catch (simpleError: any) {
+            // Si el endpoint simple no existe, usar el endpoint estándar
+            console.warn('Simple endpoint not available, using standard endpoint');
+        }
+        
+        // Fallback al endpoint estándar con paginación
+        const { data } = await api.get<any>('/technologies/', {
+            params: {
+                page_size: 1000, // Obtener todas las tecnologías en una sola petición
+            },
+        });
+        
+        // El endpoint puede devolver paginación, así que manejamos ambos casos
+        if (Array.isArray(data)) {
+            return data.map((tech: any) => ({
+                id: tech.id,
+                technology_name: tech.technology_name,
+            }));
+        }
+        
+        // Si viene paginado (formato estándar de DRF)
+        if (data.results && Array.isArray(data.results)) {
+            return data.results.map((tech: any) => ({
+                id: tech.id,
+                technology_name: tech.technology_name,
+            }));
+        }
+        
+        return [];
+    } catch (error: any) {
+        console.error('Error fetching technologies list:', error);
+        throw error;
+    }
+}

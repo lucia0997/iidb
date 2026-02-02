@@ -1,27 +1,31 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Button, FormControl, Input, Typography } from '@airbus/components-react';
 import { Box, TextField, Chip, IconButton } from '@mui/material';
 import { Visibility, Close } from '@mui/icons-material';
 import { DFModal, DFModalContent, DFModalFooter, DFModalHeader } from '@df/ui';
 import { useApiClient } from '@df/utils';
 import { useNavigate } from 'react-router-dom';
-import { createTechnology, checkTechnologyName, CreateTechnologyPayload, TRLData } from '../../services/TechnologiesService/technologies.service';
+import { createTechnology, checkTechnologyName, getTechnology, updateTechnology, CreateTechnologyPayload, TRLData } from '../../services/TechnologiesService/technologies.service';
 import { ColorVariants } from '../../constants';
 import './createDB.css';
 
 interface CreateTechnologyFormProps {
   onSuccess?: (technologyId: number) => void;
+  technologyId?: number | string; // Si está presente, modo edición
 }
 
-export const CreateTechnologyForm = ({ onSuccess }: CreateTechnologyFormProps) => {
+export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnologyFormProps) => {
   const api = useApiClient();
   const navigate = useNavigate();
+  const isEditMode = !!technologyId;
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showConflictModal, setShowConflictModal] = useState(false);
   const [conflictTechnologyId, setConflictTechnologyId] = useState<number | null>(null);
   const [pendingPayload, setPendingPayload] = useState<CreateTechnologyPayload | null>(null);
+  const [technologyName, setTechnologyName] = useState<string>('');
   
   // TRL management
   const [trls, setTrls] = useState<TRLData[]>([]);
@@ -54,6 +58,67 @@ export const CreateTechnologyForm = ({ onSuccess }: CreateTechnologyFormProps) =
   const [dependenciesText, setDependenciesText] = useState('');
   const [targetedProgrammesText, setTargetedProgrammesText] = useState('');
 
+  // Cargar datos en modo edición
+  useEffect(() => {
+    if (technologyId) {
+      const loadTechnology = async () => {
+        try {
+          setLoadingData(true);
+          setError(null);
+          const technology = await getTechnology(api, technologyId);
+          
+          // Establecer el nombre de la tecnología para mostrarlo en el título
+          setTechnologyName(technology.technology_name);
+          
+          // Cargar datos del formulario
+          setFormData({
+            technology_name: technology.technology_name || '',
+            current_trl: technology.current_trl || 1,
+            physical_technology_cluster: technology.physical_technology_cluster || '',
+            digital_technology_cluster: technology.digital_technology_cluster || '',
+            product_roadmap: technology.product_roadmap || '',
+            technology_roadmap: technology.technology_roadmap || '',
+            technology_description: technology.technology_description || '',
+            dependencies: technology.dependencies || [],
+            fom_type: technology.fom_type || '',
+            fom_value_percent: technology.fom_value_percent || undefined,
+            targeted_programmes: technology.targeted_programmes || [],
+            ac_application: technology.ac_application || '',
+          });
+          
+          // Cargar listas como texto
+          if (technology.dependencies && Array.isArray(technology.dependencies)) {
+            setDependenciesText(technology.dependencies.join(', '));
+          }
+          if (technology.targeted_programmes && Array.isArray(technology.targeted_programmes)) {
+            setTargetedProgrammesText(technology.targeted_programmes.join(', '));
+          }
+          
+          // Cargar TRLs
+          if (technology.trls && Array.isArray(technology.trls)) {
+            const trlsData: TRLData[] = technology.trls.map(trl => ({
+              trl_number: trl.trl_number,
+              trl_year: trl.trl_year,
+              trl_cost: trl.trl_cost,
+            }));
+            setTrls(trlsData);
+          }
+        } catch (err: any) {
+          const errorMessage =
+            err.response?.data?.detail ||
+            err.response?.data?.errors ||
+            err.message ||
+            'Error loading technology';
+          setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+        } finally {
+          setLoadingData(false);
+        }
+      };
+      
+      loadTechnology();
+    }
+  }, [technologyId, api]);
+
   const handleInputChange = (field: keyof CreateTechnologyPayload) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -81,7 +146,65 @@ export const CreateTechnologyForm = ({ onSuccess }: CreateTechnologyFormProps) =
     setLoading(true);
 
     try {
-      // Verificar primero si ya existe una tecnología con ese nombre
+      // En modo edición, usar updateTechnology directamente
+      if (isEditMode && technologyId) {
+        const dependencies = dependenciesText
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0);
+
+        const targetedProgrammes = targetedProgrammesText
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0);
+
+        const payload: CreateTechnologyPayload = {
+          technology_name: formData.technology_name,
+          current_trl: formData.current_trl,
+          trls: trls,
+        };
+
+        if (formData.physical_technology_cluster) {
+          payload.physical_technology_cluster = formData.physical_technology_cluster;
+        }
+        if (formData.digital_technology_cluster) {
+          payload.digital_technology_cluster = formData.digital_technology_cluster;
+        }
+        if (formData.product_roadmap) {
+          payload.product_roadmap = formData.product_roadmap;
+        }
+        if (formData.technology_roadmap) {
+          payload.technology_roadmap = formData.technology_roadmap;
+        }
+        if (formData.technology_description) {
+          payload.technology_description = formData.technology_description;
+        }
+        if (dependencies.length > 0) {
+          payload.dependencies = dependencies;
+        }
+        if (formData.fom_type) {
+          payload.fom_type = formData.fom_type;
+        }
+        if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
+          payload.fom_value_percent = formData.fom_value_percent;
+        }
+        if (targetedProgrammes.length > 0) {
+          payload.targeted_programmes = targetedProgrammes;
+        }
+        if (formData.ac_application) {
+          payload.ac_application = formData.ac_application;
+        }
+
+        const response = await updateTechnology(api, technologyId, payload);
+        setSuccess(`Technology updated successfully with ID: ${response.id}`);
+        
+        if (onSuccess) {
+          onSuccess(response.id);
+        }
+        return;
+      }
+
+      // Modo creación: verificar primero si ya existe una tecnología con ese nombre
       const checkResult = await checkTechnologyName(api, formData.technology_name);
       
       if (checkResult.exists && checkResult.id) {
@@ -239,7 +362,7 @@ export const CreateTechnologyForm = ({ onSuccess }: CreateTechnologyFormProps) =
         err.response?.data?.detail ||
         err.response?.data?.errors ||
         err.message ||
-        'Error creating technology';
+        isEditMode ? 'Error updating technology' : 'Error creating technology';
       setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
     } finally {
       setLoading(false);
@@ -627,7 +750,7 @@ export const CreateTechnologyForm = ({ onSuccess }: CreateTechnologyFormProps) =
               },
             }}
           >
-            {loading ? 'Creating...' : 'Create Technology'}
+            {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Technology' : 'Create Technology')}
           </Box>
         </Box>
       </Box>

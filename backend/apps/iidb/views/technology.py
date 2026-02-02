@@ -65,6 +65,17 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
         # Sin TRLs: comportamiento estándar
         return ColumnsMixin.rows(self, request)
 
+    @action(detail=False, methods=["GET"], url_path="list-simple")
+    def list_simple(self, request):
+        """
+        GET /technologies/list-simple/
+        
+        Devuelve una lista simple de tecnologías con solo id y technology_name.
+        Útil para selectores y dropdowns.
+        """
+        technologies = Technology.objects.all().order_by("technology_name").values("id", "technology_name")
+        return Response(list(technologies), status=status.HTTP_200_OK)
+
     @action(detail=False, methods=["GET"], url_path="check-name")
     def check_name(self, request):
         """
