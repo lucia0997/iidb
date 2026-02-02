@@ -23,7 +23,13 @@ class TechnologySerializer(serializers.ModelSerializer):
     technology_description = serializers.CharField(label=_("Technology Description"), allow_blank=True, allow_null=True, required=False)
     tech_cluster_dependencies = serializers.ListField(child=serializers.CharField(), label=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), required=False, allow_empty=True)
     targeted_programmes = serializers.ListField(child=serializers.CharField(), label=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), required=False, allow_empty=True)
-    current_trl = serializers.IntegerField(label=_("Current TRL (1-9)"), required=False, allow_null=True, min_value=1, max_value=9)
+    current_trl = serializers.IntegerField(
+        label=_("Current TRL (1-9)"),
+        required=True,
+        allow_null=False,
+        min_value=1,
+        max_value=9,
+    )
     trls = serializers.PrimaryKeyRelatedField(queryset=TRL.objects.all(), many=True, label=_("TRLs"), required=False, allow_empty=True)
     fom_type = serializers.CharField(label=_("FoM Type"), allow_blank=True, allow_null=True, required=False)
     fom_value_percent = serializers.DecimalField(label=_("FoM Value (%)"), max_digits=5, decimal_places=2, required=False, allow_null=True)
