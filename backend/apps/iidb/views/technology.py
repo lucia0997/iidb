@@ -1,11 +1,16 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db import transaction
+from django.core.exceptions import ValidationError as DjangoValidationError
+import logging
 from ..models.technology import Technology, TRL
 from ..serializers.technology import TechnologySerializer, TechnologyRowSerializer, TRLSerializer, TechnologyWithTRLsSerializer
 from .mixins import ColumnsMixin, parse_and_validate_columns
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
+
+logger = logging.getLogger(__name__)
 
 
 class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
@@ -73,7 +78,7 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
         
         if not technology_name:
             return Response(
-                {"detail": "El parámetro 'name' es requerido."},
+                {"detail": "The 'name' parameter is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
@@ -98,6 +103,7 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
             )
 
     @action(detail=False, methods=["POST"], url_path="create")
+    @transaction.atomic
     def create_technology(self, request):
         """
         POST /technologies/create/
@@ -118,93 +124,180 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
         - Si la tecnología ya existe: devuelve el ID existente y "created": false
         - Si se crea nueva: devuelve el ID nuevo y "created": true
         """
-        data = request.data.copy()
-
-        technology_name = data.get("technology_name", "").strip()
-        
-        if not technology_name:
-            return Response(
-                {"detail": "El campo 'technology_name' es requerido."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        
-        # Verificar si ya existe
         try:
-            existing_technology = Technology.objects.get(technology_name=technology_name)
-            serializer = self.get_serializer(existing_technology)
-            return Response(
-                {
-                    "created": False,
-                    "id": existing_technology.id,
-                    "technology": serializer.data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Technology.DoesNotExist:
-            # No existe, crear nueva
-            # 1) Procesar TRLs anidados si vienen como lista de objetos
-            trls_payload = data.get("trls", None)
-            trl_instances = []
+            data = request.data.copy()
 
-            if isinstance(trls_payload, list):
-                for trl_item in trls_payload:
-                    # Esperamos diccionarios con trl_number obligatorio
-                    trl_number = trl_item.get("trl_number")
-                    trl_year = trl_item.get("trl_year")
-                    trl_cost = trl_item.get("trl_cost")
+            technology_name = data.get("technology_name", "").strip()
+            
+            if not technology_name:
+                return Response(
+                    {"detail": "The 'technology_name' field is required."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            # Verificar si ya existe
+            try:
+                existing_technology = Technology.objects.get(technology_name=technology_name)
+                serializer = self.get_serializer(existing_technology)
+                return Response(
+                    {
+                        "created": False,
+                        "id": existing_technology.id,
+                        "technology": serializer.data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            except Technology.DoesNotExist:
+                # No existe, crear nueva
+                # 1) Procesar TRLs anidados si vienen como lista de objetos
+                trls_payload = data.get("trls", None)
+                trl_instances = []
 
-                    if trl_number is None:
-                        return Response(
-                            {
-                                "detail": "Cada elemento de 'trls' debe incluir 'trl_number'.",
-                                "item": trl_item,
-                            },
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
+                if isinstance(trls_payload, list):
+                    for trl_item in trls_payload:
+                        try:
+                            # Esperamos diccionarios con trl_number obligatorio
+                            trl_number = trl_item.get("trl_number")
+                            trl_year = trl_item.get("trl_year")
+                            trl_cost = trl_item.get("trl_cost")
 
-                    # Buscar solo por trl_number (campo único/identificador)
-                    # Si existe, actualizar año y costo si se proporcionan
-                    # Si no existe, crearlo con todos los valores
-                    trl_obj, created = TRL.objects.get_or_create(
-                        trl_number=trl_number,
-                        defaults={
-                            "trl_year": trl_year,
-                            "trl_cost": trl_cost,
-                        },
-                    )
-                    
-                    # Si ya existía, actualizar los campos opcionales si se proporcionaron
-                    if not created:
-                        if trl_year is not None:
-                            trl_obj.trl_year = trl_year
-                        if trl_cost is not None:
-                            trl_obj.trl_cost = trl_cost
-                        trl_obj.save()
-                    
-                    trl_instances.append(trl_obj)
+                            # Validar y convertir tipos
+                            if trl_number is None:
+                                return Response(
+                                    {
+                                        "detail": "Each 'trls' element must include 'trl_number'.",
+                                        "item": trl_item,
+                                    },
+                                    status=status.HTTP_400_BAD_REQUEST,
+                                )
+                            
+                            # Convertir a enteros si vienen como strings
+                            if isinstance(trl_number, str):
+                                try:
+                                    trl_number = int(trl_number)
+                                except (ValueError, TypeError):
+                                    return Response(
+                                        {
+                                            "detail": f"trl_number must be an integer. Received value: {trl_number}",
+                                            "item": trl_item,
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST,
+                                    )
+                            
+                            if isinstance(trl_year, str) and trl_year:
+                                try:
+                                    trl_year = int(trl_year)
+                                except (ValueError, TypeError):
+                                    return Response(
+                                        {
+                                            "detail": f"trl_year must be an integer. Received value: {trl_year}",
+                                            "item": trl_item,
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST,
+                                    )
+                            
+                            # Convertir trl_cost a Decimal si viene como string o número
+                            from decimal import Decimal, InvalidOperation
+                            trl_cost_decimal = None
+                            if trl_cost is not None:
+                                try:
+                                    if isinstance(trl_cost, str):
+                                        trl_cost_decimal = Decimal(trl_cost)
+                                    elif isinstance(trl_cost, (int, float)):
+                                        trl_cost_decimal = Decimal(str(trl_cost))
+                                    else:
+                                        trl_cost_decimal = trl_cost
+                                except (ValueError, InvalidOperation, TypeError):
+                                    return Response(
+                                        {
+                                            "detail": f"trl_cost must be a valid number. Received value: {trl_cost}",
+                                            "item": trl_item,
+                                        },
+                                        status=status.HTTP_400_BAD_REQUEST,
+                                    )
+
+                            # Buscar por trl_number Y trl_year (combinación única)
+                            # Si existe, actualizar costo si se proporciona
+                            # Si no existe, crearlo con todos los valores
+                            trl_obj = None
+                            if trl_year is not None:
+                                # Buscar por trl_number y trl_year
+                                trl_obj = TRL.objects.filter(
+                                    trl_number=trl_number,
+                                    trl_year=trl_year
+                                ).first()
+                            
+                            if trl_obj:
+                                # Si existe, actualizar el costo si se proporciona
+                                if trl_cost_decimal is not None:
+                                    trl_obj.trl_cost = trl_cost_decimal
+                                    trl_obj.save()
+                            else:
+                                # Si no existe, crear uno nuevo
+                                trl_obj = TRL.objects.create(
+                                    trl_number=trl_number,
+                                    trl_year=trl_year,
+                                    trl_cost=trl_cost_decimal,
+                                )
+                            
+                            trl_instances.append(trl_obj)
+                        except Exception as e:
+                            return Response(
+                                {
+                                    "detail": f"Error processing TRL: {str(e)}",
+                                    "item": trl_item,
+                                },
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
 
                 # Sustituimos el payload original por la lista de IDs
                 data["trls"] = [t.id for t in trl_instances]
 
-            serializer = self.get_serializer(data=data)
-            if serializer.is_valid():
-                technology = serializer.save()
-                return Response(
-                    {
-                        "created": True,
-                        "id": technology.id,
-                        "technology": serializer.data,
-                    },
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response(
-                    {
-                        "detail": "Error de validación al crear la tecnología.",
-                        "errors": serializer.errors,
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                serializer = self.get_serializer(data=data)
+                if serializer.is_valid():
+                    try:
+                        technology = serializer.save()
+                        # Intentar serializar la respuesta para detectar errores temprano
+                        try:
+                            technology_data = serializer.data
+                        except Exception as serialization_error:
+                            logger.error(f"Error serializing technology after saving: {str(serialization_error)}", exc_info=True)
+                            raise
+                        
+                        return Response(
+                            {
+                                "created": True,
+                                "id": technology.id,
+                                "technology": technology_data,
+                            },
+                            status=status.HTTP_201_CREATED,
+                        )
+                    except Exception as save_error:
+                        logger.error(f"Error saving technology: {str(save_error)}", exc_info=True)
+                        # La transacción hará rollback automáticamente
+                        return Response(
+                            {
+                                "detail": f"Error saving technology: {str(save_error)}",
+                            },
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        )
+                else:
+                    return Response(
+                        {
+                            "detail": "Validation error when creating technology.",
+                            "errors": serializer.errors,
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+        except Exception as e:
+            logger.error(f"Unexpected error in create_technology: {str(e)}", exc_info=True)
+            # La transacción hará rollback automáticamente
+            return Response(
+                {
+                    "detail": f"Unexpected error: {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
     """

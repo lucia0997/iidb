@@ -15,13 +15,13 @@ const MainMenu: FC = () => {
           Technology Roadmapping
         </Link>
         <Link to="industrial-database" className="button database">
-          Industrial DataBase Mapping
+          Industrial Database Mapping
         </Link>
         <Link to="project-roadmapping" className="button project">
           Project Roadmapping
         </Link>
         <Link to="create-database" className="button create">
-          Industrial DataBase Create
+          Industrial Database Operations
         </Link>
       </div>
     </div>

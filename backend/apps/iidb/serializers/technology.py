@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import empty
-from ..models import Technology, TRL
+from ..models import Technology, TRL, TechnologyTRL
 
 
 class TechnologySerializer(serializers.ModelSerializer):
@@ -80,8 +80,15 @@ class TechnologySerializer(serializers.ModelSerializer):
     def _set_trls(self, instance, trls):
         if trls is None:
             return
-        # Clear and set in one go; through model enforces uniqueness by trl_number
-        instance.trls.set(trls)
+        # Clear existing TRLs
+        instance.trls.clear()
+        # Create TechnologyTRL entries explicitly to ensure trl_number is set
+        for trl in trls:
+            TechnologyTRL.objects.create(
+                technology=instance,
+                trl=trl,
+                trl_number=trl.trl_number
+            )
 
     def create(self, validated_data):
         trls = validated_data.pop("trls", [])

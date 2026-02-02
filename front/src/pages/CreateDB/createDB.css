@@ -9,17 +9,46 @@
   padding: 32px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 200px);
+  min-height: 0;
 }
 
 .createTechnologyContainer {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0; /* Important for flexbox scrolling */
 }
 
 .createTechnologyContainer form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Custom scrollbar styling */
+.createTechnologyContainer > div[style*="overflow"] {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
 }
 

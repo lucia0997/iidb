@@ -54,6 +54,12 @@ export async function getTechnologyRowDetail(
     return data;
 }
 
+export interface TRLData {
+    trl_number: number;
+    trl_year?: number;
+    trl_cost?: number;
+}
+
 export interface CreateTechnologyPayload {
     technology_name: string;
     current_trl: number;
@@ -67,6 +73,7 @@ export interface CreateTechnologyPayload {
     fom_value_percent?: number;
     targeted_programmes?: string[]; // Lista de strings
     ac_application?: string;
+    trls?: TRLData[]; // Lista de TRLs
 }
 
 export interface CreateTechnologyResponse {
@@ -80,5 +87,21 @@ export async function createTechnology(
     payload: CreateTechnologyPayload
 ): Promise<CreateTechnologyResponse> {
     const { data } = await api.post<CreateTechnologyResponse>('/technologies/create/', payload);
+    return data;
+}
+
+export interface CheckTechnologyNameResponse {
+    exists: boolean;
+    id: number | null;
+    technology_name: string;
+}
+
+export async function checkTechnologyName(
+    api: AxiosHttpClient,
+    technologyName: string
+): Promise<CheckTechnologyNameResponse> {
+    const { data } = await api.get<CheckTechnologyNameResponse>('/technologies/check-name/', {
+        params: { name: technologyName },
+    });
     return data;
 }
