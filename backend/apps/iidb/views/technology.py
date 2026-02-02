@@ -17,7 +17,7 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["current_trl", "fom_type"]
-    search_fields = ["technology_name", "product_domains", "technology_domains", "ac_application", "targeted_programmes"]
+    search_fields = ["technology_name", "product_roadmap", "technology_roadmap", "ac_application", "targeted_programmes"]
     ordering_fields = ["technology_name", "current_trl", "fom_value_percent"]
 
     @action(detail=False, methods=["GET"], url_path="rows")

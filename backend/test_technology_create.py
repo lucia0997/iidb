@@ -128,10 +128,10 @@ def main():
         # Campos opcionales
         "physical_technology_cluster": "Cluster Físico Test",
         "digital_technology_cluster": "Cluster Digital Test",
-        "product_domains": "Producto Test",
-        "technology_domains": "Dominio Test",
+        "product_roadmap": "Producto Test",
+        "technology_roadmap": "Dominio Test",
         "technology_description": "Esta es una tecnología de prueba creada desde el script",
-        "tech_cluster_dependencies": ["Dependencia 1", "Dependencia 2"],
+        "dependencies": ["Dependencia 1", "Dependencia 2"],
         "fom_type": "Tipo FoM Test",
         "fom_value_percent": 15.75,
         "targeted_programmes": ["Programa A", "Programa B"],

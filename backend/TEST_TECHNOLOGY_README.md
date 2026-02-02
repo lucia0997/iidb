@@ -83,10 +83,10 @@ El endpoint `POST /technologies/create/` espera un JSON con esta estructura:
   // Campos opcionales:
   "physical_technology_cluster": "...",
   "digital_technology_cluster": "...",
-  "product_domains": "...",
-  "technology_domains": "...",
+  "product_roadmap": "...",
+  "technology_roadmap": "...",
   "technology_description": "...",
-  "tech_cluster_dependencies": ["...", "..."],
+  "dependencies": ["...", "..."],
   "fom_type": "...",
   "fom_value_percent": 12.5,
   "targeted_programmes": ["...", "..."],

@@ -17,11 +17,11 @@ class TechnologySerializer(serializers.ModelSerializer):
         allow_null=True,
         required=False,
     )
-    product_domains = serializers.CharField(label=_("Product Domains"), allow_blank=True, allow_null=True, required=False)
-    technology_domains = serializers.CharField(label=_("Technology Domains"), allow_blank=True, allow_null=True, required=False)
+    product_roadmap = serializers.CharField(label=_("Product Roadmap"), allow_blank=True, allow_null=True, required=False)
+    technology_roadmap = serializers.CharField(label=_("Technology Roadmap"), allow_blank=True, allow_null=True, required=False)
     technology_name = serializers.CharField(label=_("Technology Name"), allow_blank=False, allow_null=False, required=True)
     technology_description = serializers.CharField(label=_("Technology Description"), allow_blank=True, allow_null=True, required=False)
-    tech_cluster_dependencies = serializers.ListField(child=serializers.CharField(), label=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), required=False, allow_empty=True)
+    dependencies = serializers.ListField(child=serializers.CharField(), label=_("Dependencies"), help_text=_("Same list of values as Technology Cluster"), required=False, allow_empty=True)
     targeted_programmes = serializers.ListField(child=serializers.CharField(), label=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), required=False, allow_empty=True)
     current_trl = serializers.IntegerField(
         label=_("Current TRL (1-9)"),
@@ -41,13 +41,13 @@ class TechnologySerializer(serializers.ModelSerializer):
             "id",
             "physical_technology_cluster",
             "digital_technology_cluster",
-            "product_domains",
-            "technology_domains",
+            "product_roadmap",
+            "technology_roadmap",
             "technology_name",
             "technology_description",
             "current_trl",
             "trls",
-            "tech_cluster_dependencies",
+            "dependencies",
             "fom_type",
             "fom_value_percent",
             "targeted_programmes",
@@ -63,8 +63,8 @@ class TechnologySerializer(serializers.ModelSerializer):
 
         return [x for x in value if x not in (None, "")]
 
-    def validate_tech_cluster_dependencies(self, value):
-        return self._validate_string_list(value, "Tech. Cluster Dependencies")
+    def validate_dependencies(self, value):
+        return self._validate_string_list(value, "Dependencies")
 
     def validate_targeted_programmes(self, value):
         return self._validate_string_list(value, "Targeted Programmes")

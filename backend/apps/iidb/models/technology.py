@@ -38,13 +38,13 @@ class Technology(models.Model):
         verbose_name=_("Digital Technology Cluster"),
         blank=True,
     )
-    product_domains = models.CharField(max_length=255, verbose_name=_("Product Domains"), blank=True)
-    technology_domains = models.CharField(max_length=255, verbose_name=_("Technology Domains"), blank=True)
+    product_roadmap = models.CharField(max_length=255, verbose_name=_("Product Roadmap"), blank=True)
+    technology_roadmap = models.CharField(max_length=255, verbose_name=_("Technology Roadmap"), blank=True)
     technology_name = models.CharField(max_length=255, unique=True, verbose_name=_("Technology Name"))
     technology_description = models.TextField(verbose_name=_("Technology Description"), blank=True)
     current_trl = models.PositiveSmallIntegerField(verbose_name=_("Current TRL (1-9)"), choices=TRLLevel.choices, null=True, blank=True)
     trls = models.ManyToManyField(TRL, through="TechnologyTRL", related_name="technologies", verbose_name=_("TRLs"), blank=True)
-    tech_cluster_dependencies = models.JSONField(default=list, verbose_name=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
+    dependencies = models.JSONField(default=list, verbose_name=_("Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
     fom_type = models.CharField(max_length=100, verbose_name=_("FoM Type"), blank=True)    
     fom_value_percent = models.DecimalField(verbose_name=_("FoM Value (%)"), max_digits=5, decimal_places=2, null=True, blank=True)
     targeted_programmes = models.JSONField(default=list, verbose_name=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), blank=True)

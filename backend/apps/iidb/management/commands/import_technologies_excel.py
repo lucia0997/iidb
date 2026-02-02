@@ -44,12 +44,12 @@ class Command(BaseCommand):
             column_mapping = {
                 'Physical Technology Cluster': 'physical_technology_cluster',
                 'Digital Technology Cluster': 'digital_technology_cluster',
-                'Product Domains': 'product_domains',
-                'Technology Domains': 'technology_domains',
+                'Product Roadmap': 'product_roadmap',
+                'Technology Roadmap': 'technology_roadmap',
                 'Technology Name': 'technology_name',
                 'Technology Description': 'technology_description',
                 'Current TRL (1-9)': 'current_trl',
-                'Dependencies other Techno': 'tech_cluster_dependencies',
+                'Dependencies other Techno': 'dependencies',
                 'FoM Type': 'fom_type',
                 'FoM Value (%)': 'fom_value_percent',
                 'Targeted Programmes A/C Application': 'targeted_programmes_ac',
@@ -111,7 +111,7 @@ class Command(BaseCommand):
                                             tech_data[db_field] = Decimal(value_str) if value_str and value_str != 'N/A' else None
                                         except (InvalidOperation, ValueError, TypeError):
                                             tech_data[db_field] = None
-                                    elif db_field == 'tech_cluster_dependencies':
+                                    elif db_field == 'dependencies':
                                         # Convertir a lista JSON
                                         if str(cell_value).strip() in ['N/A', '', 'None', None]:
                                             tech_data[db_field] = []
@@ -167,11 +167,11 @@ class Command(BaseCommand):
                             defaults={
                                 'physical_technology_cluster': tech_data.get('physical_technology_cluster', ''),
                                 'digital_technology_cluster': tech_data.get('digital_technology_cluster', ''),
-                                'product_domains': tech_data.get('product_domains', ''),
-                                'technology_domains': tech_data.get('technology_domains', ''),
+                                'product_roadmap': tech_data.get('product_roadmap', ''),
+                                'technology_roadmap': tech_data.get('technology_roadmap', ''),
                                 'technology_description': tech_data.get('technology_description', ''),
                                 'current_trl': tech_data.get('current_trl'),
-                                'tech_cluster_dependencies': tech_data.get('tech_cluster_dependencies', []),
+                                'dependencies': tech_data.get('dependencies', []),
                                 'fom_type': tech_data.get('fom_type', ''),
                                 'fom_value_percent': tech_data.get('fom_value_percent'),
                                 'targeted_programmes': tech_data.get('targeted_programmes', []),
