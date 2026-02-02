@@ -53,3 +53,32 @@ export async function getTechnologyRowDetail(
     );
     return data;
 }
+
+export interface CreateTechnologyPayload {
+    technology_name: string;
+    current_trl: number;
+    physical_technology_cluster?: string;
+    digital_technology_cluster?: string;
+    product_roadmap?: string;
+    technology_roadmap?: string;
+    technology_description?: string;
+    dependencies?: string[]; // Lista de strings
+    fom_type?: string;
+    fom_value_percent?: number;
+    targeted_programmes?: string[]; // Lista de strings
+    ac_application?: string;
+}
+
+export interface CreateTechnologyResponse {
+    created: boolean;
+    id: number;
+    technology: any;
+}
+
+export async function createTechnology(
+    api: AxiosHttpClient,
+    payload: CreateTechnologyPayload
+): Promise<CreateTechnologyResponse> {
+    const { data } = await api.post<CreateTechnologyResponse>('/technologies/create/', payload);
+    return data;
+}
