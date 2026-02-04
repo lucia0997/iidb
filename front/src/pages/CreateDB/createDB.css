@@ -52,3 +52,13 @@
   background: #a0aec0;
 }
 
+/* Make Select wider in EditTechnologyPage */
+.createDBSection [class*="FormControl"] {
+  width: 100% !important;
+  min-width: 600px !important;
+}
+
+.createDBSection [class*="Select"] {
+  width: 100% !important;
+}
+

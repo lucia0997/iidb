@@ -1,4 +1,4 @@
-import { Typography, FormControl, Select } from '@airbus/components-react';
+import { Typography, FormControl, Select, Button } from '@airbus/components-react';
 import { Box } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -28,8 +28,6 @@ const EditTechnologyPage = () => {
           setTechnologiesList(list);
         } catch (err: any) {
           console.error('Error loading technologies list:', err);
-          const errorMessage = err.response?.data?.detail || err.message || 'Error loading technologies list';
-          console.error('Error details:', errorMessage);
         } finally {
           setLoadingList(false);
         }
@@ -56,14 +54,6 @@ const EditTechnologyPage = () => {
     }
   }, [id, api]);
 
-  const handleTechnologySelect = (value: any) => {
-    // El Select puede pasar el objeto completo o el valor, manejamos ambos casos
-    const technologyId = typeof value === 'string' ? value : (value?.value || value?.id || String(value));
-    setSelectedTechnologyId(technologyId);
-    if (technologyId && technologyId !== '') {
-      navigate(`/create-database/technology/edit/${technologyId}`);
-    }
-  };
 
   return (
     <Box 
@@ -76,6 +66,29 @@ const EditTechnologyPage = () => {
         flexDirection: 'column',
       }}
     >
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'flex-start', 
+        marginBottom: '16px',
+        width: '100%',
+        maxWidth: '900px',
+        margin: '0 auto 16px auto',
+      }}>
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/create-database/technology')}
+          disabled={loading || loadingList}
+          sx={{
+            color: ColorVariants.technology.text,
+            '&:hover': {
+              backgroundColor: ColorVariants.technology.light,
+            },
+          }}
+        >
+          Back to Technology Operations
+        </Button>
+      </Box>
+      
       <Typography 
         variant="h2" 
         align="center" 
@@ -108,27 +121,88 @@ const EditTechnologyPage = () => {
         {id ? (
           <CreateTechnologyForm technologyId={id} />
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center' }}>
-            <Typography variant="h3" sx={{ color: ColorVariants.technology.text, fontWeight: 500 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
+            <Typography variant="h3" sx={{ color: ColorVariants.technology.text, fontWeight: 500, textAlign: 'center' }}>
               Select Technology to Edit
             </Typography>
             
-            <FormControl 
-              label="Technology" 
-              required
-              sx={{ width: '100%', maxWidth: '800px' }}
-            >
-              <Select
-                value={selectedTechnologyId}
-                onChange={(value) => handleTechnologySelect(value as string)}
-                options={technologiesList.map((tech) => ({
-                  value: String(tech.id),
-                  label: tech.technology_name,
-                }))}
-                loading={loadingList}
-                placeholder={loadingList ? 'Loading technologies...' : 'Select a technology'}
-              />
-            </FormControl>
+            <Box sx={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+              <FormControl 
+                label="Technology" 
+                required
+                sx={{ width: '100%' }}
+              >
+                <Select
+                  value={selectedTechnologyId}
+                  onChange={(event: any) => {
+                    // El Select de Airbus Components pasa el evento sintético
+                    // El valor está en event.target.value
+                    let id = '';
+                    
+                    if (event?.target?.value !== undefined && event?.target?.value !== null) {
+                      id = String(event.target.value);
+                    } else if (typeof event === 'string') {
+                      id = event;
+                    } else if (event?.value !== undefined) {
+                      id = String(event.value);
+                    }
+                    
+                    // Limpiar y validar
+                    id = id.trim();
+                    if (id === '[object Object]' || id === 'undefined' || id === 'null' || id === '') {
+                      id = '';
+                    }
+                    
+                    setSelectedTechnologyId(id);
+                  }}
+                  options={technologiesList.map((tech) => ({
+                    value: String(tech.id),
+                    label: tech.technology_name,
+                  }))}
+                  loading={loadingList}
+                  placeholder={loadingList ? 'Loading technologies...' : 'Select a technology'}
+                />
+              </FormControl>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', width: '100%', maxWidth: '800px', margin: '0 auto', alignItems: 'center' }}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  // Validar que el ID sea válido antes de navegar
+                  let validId = selectedTechnologyId;
+                  
+                  // Si es un objeto, intentar extraer el value
+                  if (validId && typeof validId === 'object') {
+                    const obj = validId as any;
+                    validId = obj.value || obj.id || String(obj.value || obj.id || '');
+                  }
+                  
+                  // Convertir a string y limpiar
+                  validId = String(validId || '').trim();
+                  
+                  // Validar que no sea un valor inválido
+                  if (validId && 
+                      validId !== '' && 
+                      validId !== 'undefined' && 
+                      validId !== 'null' && 
+                      validId !== '[object Object]' &&
+                      !isNaN(Number(validId))) {
+                    navigate(`/create-database/technology/edit/${validId}`);
+                  }
+                }}
+                disabled={!selectedTechnologyId || 
+                         selectedTechnologyId === '' || 
+                         String(selectedTechnologyId) === '[object Object]' ||
+                         loadingList}
+                sx={{
+                  minWidth: '200px',
+                  padding: '12px 24px',
+                }}
+              >
+                Edit Technology
+              </Button>
+            </Box>
 
             {technologiesList.length === 0 && !loadingList && (
               <Typography variant="medium" sx={{ color: ColorVariants.technology.text, opacity: 0.7 }}>

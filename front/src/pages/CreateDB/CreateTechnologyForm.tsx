@@ -750,7 +750,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
               },
             }}
           >
-            {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Technology' : 'Create Technology')}
+            {loading ? (isEditMode ? 'Modifying...' : 'Creating...') : (isEditMode ? 'Modify' : 'Create Technology')}
           </Box>
         </Box>
       </Box>
