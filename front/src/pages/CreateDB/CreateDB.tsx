@@ -1,21 +1,23 @@
 import { Button, Typography } from '@airbus/components-react';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TableColors, TableColorsHover } from '../../constants';
 import './createDB.css';
 
 const CreateDB = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('create_db');
 
   return (
     <Box className="createDBContainer">
       <Typography variant="h2" align="center" style={{ marginBottom: '32px' }}>
-        Industrial Database Operations
+        {t('title')}
       </Typography>
       
       <Box className="createDBSection" sx={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
         <Typography variant="h3" style={{ marginBottom: '24px' }}>
-          Select a table
+          {t('selectTable')}
         </Typography>
         
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
@@ -37,7 +39,7 @@ const CreateDB = () => {
               },
             }}
           >
-            Technologies
+            {t('technologies')}
           </Box>
           
           <Box
@@ -56,7 +58,7 @@ const CreateDB = () => {
               opacity: 0.6,
             }}
           >
-            Strategies
+            {t('strategies')}
           </Box>
           
           <Box
@@ -75,7 +77,7 @@ const CreateDB = () => {
               opacity: 0.6,
             }}
           >
-            Processes
+            {t('processes')}
           </Box>
           
           <Box
@@ -94,7 +96,7 @@ const CreateDB = () => {
               opacity: 0.6,
             }}
           >
-            Projects
+            {t('projects')}
           </Box>
           
           <Box
@@ -113,7 +115,7 @@ const CreateDB = () => {
               opacity: 0.6,
             }}
           >
-            Plant Programmes
+            {t('plantProgrammes')}
           </Box>
         </Box>
         
@@ -122,7 +124,7 @@ const CreateDB = () => {
             variant="ghost"
             onClick={() => navigate('/')}
           >
-            Back to Main Menu
+            {t('backToMainMenu')}
           </Button>
         </Box>
       </Box>

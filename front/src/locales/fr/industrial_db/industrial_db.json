@@ -1,0 +1,15 @@
+{
+  "title": "Cartographie de Base de Données Industrielle",
+  "selectParametersToVisualize": "Sélectionner les Paramètres à Visualiser :",
+  "parameterSelected": "{{count}} paramètre sélectionné",
+  "parametersSelected": "{{count}} paramètres sélectionnés",
+  "clearAll": "Tout effacer",
+  "applyFilters": "Appliquer les Filtres",
+  "reset": "Réinitialiser",
+  "plantsProgrammes": "Usines / Programmes",
+  "technologies": "Technologies",
+  "strategies": "Stratégies",
+  "processes": "Processus",
+  "projects": "Projets"
+}
+

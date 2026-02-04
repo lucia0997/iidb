@@ -5,6 +5,7 @@ import { Visibility, Close } from '@mui/icons-material';
 import { DFModal, DFModalContent, DFModalFooter, DFModalHeader } from '@df/ui';
 import { useApiClient } from '@df/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { createTechnology, checkTechnologyName, getTechnology, updateTechnology, CreateTechnologyPayload, TRLData } from '../../services/TechnologiesService/technologies.service';
 import { ColorVariants } from '../../constants';
 import './createDB.css';
@@ -17,6 +18,7 @@ interface CreateTechnologyFormProps {
 export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnologyFormProps) => {
   const api = useApiClient();
   const navigate = useNavigate();
+  const { t } = useTranslation('create_db');
   const isEditMode = !!technologyId;
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(isEditMode);
@@ -108,7 +110,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             err.response?.data?.detail ||
             err.response?.data?.errors ||
             err.message ||
-            'Error loading technology';
+            t('errorLoadingTechnology');
           setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
         } finally {
           setLoadingData(false);
@@ -196,7 +198,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         }
 
         const response = await updateTechnology(api, technologyId, payload);
-        setSuccess(`Technology updated successfully with ID: ${response.id}`);
+        setSuccess(t('technologyUpdatedSuccessfully'));
         
         if (onSuccess) {
           onSuccess(response.id);
@@ -331,7 +333,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       const response = await createTechnology(api, payload);
 
       if (response.created) {
-        setSuccess(`Technology created successfully with ID: ${response.id}`);
+        setSuccess(t('technologyCreatedSuccessfully'));
         // Clear form
         setFormData({
           technology_name: '',
@@ -355,14 +357,14 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           onSuccess(response.id);
         }
       } else {
-        setSuccess(`Technology already exists with ID: ${response.id}`);
+        setSuccess(t('technologyCreatedSuccessfully'));
       }
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.detail ||
         err.response?.data?.errors ||
         err.message ||
-        isEditMode ? 'Error updating technology' : 'Error creating technology';
+        isEditMode ? t('errorUpdatingTechnology') : t('errorCreatingTechnology');
       setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
     } finally {
       setLoading(false);
@@ -381,7 +383,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     setConflictTechnologyId(null);
     setPendingPayload(null);
     // User can modify the name and try again
-    setError(`A technology with the name "${formData.technology_name}" already exists. Please modify the name.`);
+    setError(t('technologyExistsMessage', { name: formData.technology_name }));
   };
 
   // TRL management functions
@@ -415,7 +417,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
   const handleAddTrl = () => {
     // Validate that TRL Year is provided
     if (!trlFormData.trl_year) {
-      setTrlModalError('TRL Year is required. Please provide a year.');
+      setTrlModalError(t('trlYearRequired'));
       return;
     }
 
@@ -427,7 +429,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       );
       
       if (existingTrl) {
-        setTrlModalError(`TRL ${trlFormData.trl_number} for year ${trlFormData.trl_year} already exists. Please edit the existing one or choose a different TRL number/year combination.`);
+        setTrlModalError(t('trlNumberYearUnique'));
         return;
       }
     } else {
@@ -439,7 +441,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       );
       
       if (conflictingTrl) {
-        setTrlModalError(`TRL ${trlFormData.trl_number} for year ${trlFormData.trl_year} already exists. Please choose a different TRL number/year combination.`);
+        setTrlModalError(t('trlNumberYearUnique'));
         return;
       }
     }
@@ -479,7 +481,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             },
           }}
         >
-          Back to Technology Operations
+          {t('backToTechnologyOperations')}
         </Button>
       </Box>
       
@@ -493,53 +495,53 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Technology Name */}
-        <FormControl label="Technology Name" required error={!!error && !formData.technology_name}>
+        <FormControl label={t('technologyName')} required error={!!error && !formData.technology_name}>
           <Input
             value={formData.technology_name}
             onChange={handleInputChange('technology_name')}
-            placeholder="Technology name"
+            placeholder={t('technologyNamePlaceholder')}
             required
           />
         </FormControl>
         
         {/* Physical Technology Cluster */}
-        <FormControl label="Physical Technology Cluster">
+        <FormControl label={t('physicalTechnologyCluster')}>
           <Input
             value={formData.physical_technology_cluster || ''}
             onChange={handleInputChange('physical_technology_cluster')}
-            placeholder="Physical technology cluster"
+            placeholder={t('physicalTechnologyClusterPlaceholder')}
           />
         </FormControl>
 
         {/* Digital Technology Cluster */}
-        <FormControl label="Digital Technology Cluster">
+        <FormControl label={t('digitalTechnologyCluster')}>
           <Input
             value={formData.digital_technology_cluster || ''}
             onChange={handleInputChange('digital_technology_cluster')}
-            placeholder="Digital technology cluster"
+            placeholder={t('digitalTechnologyClusterPlaceholder')}
           />
         </FormControl>
 
         {/* Product Roadmap */}
-        <FormControl label="Product Roadmap">
+        <FormControl label={t('productRoadmap')}>
           <Input
             value={formData.product_roadmap || ''}
             onChange={handleInputChange('product_roadmap')}
-            placeholder="Roadmap del producto"
+            placeholder={t('productRoadmapPlaceholder')}
           />
         </FormControl>
 
         {/* Technology Roadmap */}
-        <FormControl label="Technology Roadmap">
+        <FormControl label={t('technologyRoadmap')}>
           <Input
             value={formData.technology_roadmap || ''}
             onChange={handleInputChange('technology_roadmap')}
-            placeholder="Roadmap de la tecnología"
+            placeholder={t('technologyRoadmapPlaceholder')}
           />
         </FormControl>
 
         {/* Technology Description */}
-        <FormControl label="Technology Description">
+        <FormControl label={t('technologyDescription')}>
           <TextField
             multiline
             rows={4}
@@ -550,13 +552,13 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                 technology_description: e.target.value || undefined,
               }))
             }
-            placeholder="Technology description"
+            placeholder={t('technologyDescriptionPlaceholder')}
             fullWidth
           />
         </FormControl>
 
         {/* Current TRL (1-9) */}
-        <FormControl label="Current TRL (1-9)" required error={!!error && (!formData.current_trl || formData.current_trl < 1 || formData.current_trl > 9)}>
+        <FormControl label={t('currentTrl')} required error={!!error && (!formData.current_trl || formData.current_trl < 1 || formData.current_trl > 9)}>
           <Input
             type="number"
             min="1"
@@ -566,7 +568,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
               const value = parseInt(e.target.value) || 1;
               setFormData((prev) => ({ ...prev, current_trl: value }));
             }}
-            placeholder="1-9"
+            placeholder={t('currentTrlPlaceholder')}
             required
           />
         </FormControl>
@@ -575,7 +577,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', backgroundColor: ColorVariants.technology.clear, borderRadius: '4px', border: `1px solid ${ColorVariants.technology.main}` }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="medium" sx={{ color: ColorVariants.technology.text, fontWeight: 500 }}>
-              TRL Data
+              {t('trlsData')}
             </Typography>
             <Box
               component="button"
@@ -596,7 +598,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                 },
               }}
             >
-              Add TRL Data
+              {t('addTrlData')}
             </Box>
           </Box>
           
@@ -654,55 +656,55 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           
           {trls.length === 0 && (
             <Typography variant="small" sx={{ color: ColorVariants.technology.text, fontStyle: 'italic', opacity: 0.7 }}>
-              No TRL data added yet. Click "Add TRL Data" to add TRL information.
+              {t('noTrlDataAdded')}
             </Typography>
           )}
         </Box>
 
         {/* FoM Type */}
-        <FormControl label="FoM Type">
+        <FormControl label={t('fomType')}>
           <Input
             value={formData.fom_type || ''}
             onChange={handleInputChange('fom_type')}
-            placeholder="Tipo de FoM"
+            placeholder={t('fomTypePlaceholder')}
           />
         </FormControl>
 
         {/* FoM Value (%) */}
-        <FormControl label="FoM Value (%)">
+        <FormControl label={t('fomValue')}>
           <Input
             type="number"
             step="0.01"
             value={formData.fom_value_percent || ''}
             onChange={handleNumberChange('fom_value_percent')}
-            placeholder="Percentage value"
+            placeholder={t('fomValuePlaceholder')}
           />
         </FormControl>
 
         {/* Targeted Programmes */}
-        <FormControl label="Targeted Programmes (comma-separated)">
+        <FormControl label={t('targetedProgrammes')}>
           <Input
             value={targetedProgrammesText}
             onChange={(e) => setTargetedProgrammesText(e.target.value)}
-            placeholder="Programme 1, Programme 2, ..."
+            placeholder={t('targetedProgrammesPlaceholder')}
           />
         </FormControl>
 
         {/* A/C Application */}
-        <FormControl label="A/C Application">
+        <FormControl label={t('acApplication')}>
           <Input
             value={formData.ac_application || ''}
             onChange={handleInputChange('ac_application')}
-            placeholder="Aircraft application"
+            placeholder={t('acApplicationPlaceholder')}
           />
         </FormControl>
 
         {/* Dependencies */}
-        <FormControl label="Dependencies (comma-separated)">
+        <FormControl label={t('dependencies')}>
           <Input
             value={dependenciesText}
             onChange={(e) => setDependenciesText(e.target.value)}
-            placeholder="Dependency 1, Dependency 2, ..."
+            placeholder={t('dependenciesPlaceholder')}
           />
         </FormControl>
         </form>
@@ -750,7 +752,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
               },
             }}
           >
-            {loading ? (isEditMode ? 'Modifying...' : 'Creating...') : (isEditMode ? 'Modify' : 'Create Technology')}
+            {loading ? (isEditMode ? t('modifying') : t('creating')) : (isEditMode ? t('modifyButton') : t('createTechnologyButton'))}
           </Box>
         </Box>
       </Box>
@@ -758,7 +760,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       {/* TRL Modal */}
       <DFModal open={showTrlModal} onClose={handleCloseTrlModal} size="m">
         <DFModalHeader 
-          title={editingTrl ? `Edit TRL ${editingTrl.trl_number}${editingTrl.trl_year ? ` (${editingTrl.trl_year})` : ''}` : "Add TRL Data"} 
+          title={editingTrl ? t('editTrl', { number: editingTrl.trl_number, year: editingTrl.trl_year ? ` (${editingTrl.trl_year})` : '' }) : t('addTrlDataTitle')} 
           onClose={handleCloseTrlModal} 
         />
         <DFModalContent>
@@ -771,7 +773,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
               </Box>
             )}
             
-            <FormControl label="TRL Number (1-9)" required>
+            <FormControl label={t('trlNumber')} required>
               <Input
                 type="number"
                 min="1"
@@ -781,13 +783,13 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                   const value = parseInt(e.target.value) || 1;
                   setTrlFormData((prev) => ({ ...prev, trl_number: value }));
                 }}
-                placeholder="1-9"
+                placeholder={t('trlNumberPlaceholder')}
                 required
                 disabled={!!editingTrl}
               />
             </FormControl>
 
-            <FormControl label="TRL Year" required>
+            <FormControl label={t('trlYear')} required>
               <Input
                 type="number"
                 min="1900"
@@ -811,19 +813,19 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                   if (inputValue !== '') {
                     const parsedValue = parseInt(inputValue, 10);
                     if (isNaN(parsedValue) || parsedValue < 1900) {
-                      setTrlModalError("TRL Year must be a valid year (1900 or later).");
+                      setTrlModalError(t('trlYearInvalid'));
                       setTrlFormData((prev) => ({ ...prev, trl_year: undefined }));
                     } else {
                       setTrlModalError(null);
                     }
                   }
                 }}
-                placeholder="Year (e.g., 2024)"
+                placeholder={t('trlYearPlaceholder')}
                 required
               />
             </FormControl>
 
-            <FormControl label="TRL Cost (K€)">
+            <FormControl label={t('trlCost')}>
               <Input
                 type="number"
                 step="0.01"
@@ -832,7 +834,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                   const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
                   setTrlFormData((prev) => ({ ...prev, trl_cost: value }));
                 }}
-                placeholder="Cost in K€ (e.g., 1000.00)"
+                placeholder={t('trlCostPlaceholder')}
               />
             </FormControl>
           </Box>
@@ -842,28 +844,28 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             variant="secondary"
             onClick={handleCloseTrlModal}
           >
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             variant="primary"
             onClick={handleAddTrl}
           >
-            {editingTrl ? 'Update' : 'Add'}
+            {editingTrl ? t('update') : t('add')}
           </Button>
         </DFModalFooter>
       </DFModal>
 
       <DFModal open={showConflictModal} onClose={() => setShowConflictModal(false)} size="m">
         <DFModalHeader 
-          title="Technology Already Exists" 
+          title={t('technologyAlreadyExists')} 
           onClose={() => setShowConflictModal(false)} 
         />
         <DFModalContent>
           <Typography variant="medium">
-            A technology with the name <strong>"{formData.technology_name}"</strong> already exists.
+            {t('technologyExistsMessage', { name: formData.technology_name })}
             <br />
             <br />
-            What would you like to do?
+            {t('whatWouldYouLikeToDo')}
           </Typography>
         </DFModalContent>
         <DFModalFooter>
@@ -872,21 +874,21 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             onClick={() => setShowConflictModal(false)}
             disabled={loading}
           >
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             variant="secondary"
             onClick={handleRename}
             disabled={loading}
           >
-            Rename
+            {t('rename')}
           </Button>
           <Button
             variant="primary"
             onClick={handleModifyExisting}
             disabled={loading}
           >
-            Modify Existing
+            {t('modifyExisting')}
           </Button>
         </DFModalFooter>
       </DFModal>

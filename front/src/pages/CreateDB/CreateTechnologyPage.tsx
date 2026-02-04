@@ -1,10 +1,13 @@
 import { Typography } from '@airbus/components-react';
 import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { CreateTechnologyForm } from './CreateTechnologyForm';
 import { ColorVariants } from '../../constants';
 import './createDB.css';
 
 const CreateTechnologyPage = () => {
+  const { t } = useTranslation('create_db');
+
   return (
     <Box 
       className="createDBContainer" 
@@ -25,7 +28,7 @@ const CreateTechnologyPage = () => {
           fontWeight: 600,
         }}
       >
-        Create Technology
+        {t('createTechnology')}
       </Typography>
       
       <Box 

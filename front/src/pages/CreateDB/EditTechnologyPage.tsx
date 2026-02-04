@@ -2,6 +2,7 @@ import { Typography, FormControl, Select, Button } from '@airbus/components-reac
 import { Box } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useApiClient } from '@df/utils';
 import { getTechnology, getTechnologiesList, TechnologyListItem } from '../../services/TechnologiesService/technologies.service';
 import { CreateTechnologyForm } from './CreateTechnologyForm';
@@ -12,6 +13,7 @@ const EditTechnologyPage = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const api = useApiClient();
+  const { t } = useTranslation('create_db');
   const [technologyName, setTechnologyName] = useState<string>('');
   const [loading, setLoading] = useState(!!id);
   const [technologiesList, setTechnologiesList] = useState<TechnologyListItem[]>([]);
@@ -85,7 +87,7 @@ const EditTechnologyPage = () => {
             },
           }}
         >
-          Back to Technology Operations
+          {t('backToTechnologyOperations')}
         </Button>
       </Box>
       
@@ -98,7 +100,7 @@ const EditTechnologyPage = () => {
           fontWeight: 600,
         }}
       >
-        {loading ? 'Loading...' : (id && technologyName ? `Edit Technology: ${technologyName}` : (id ? 'Edit Technology' : 'Select Technology to Edit'))}
+        {loading ? t('loading') : (id && technologyName ? t('editTechnologyTitle', { name: technologyName }) : (id ? t('editTechnology') : t('selectTechnologyToEdit')))}
       </Typography>
       
       <Box 
@@ -123,12 +125,12 @@ const EditTechnologyPage = () => {
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
             <Typography variant="h3" sx={{ color: ColorVariants.technology.text, fontWeight: 500, textAlign: 'center' }}>
-              Select Technology to Edit
+              {t('selectTechnologyToEdit')}
             </Typography>
             
             <Box sx={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
               <FormControl 
-                label="Technology" 
+                label={t('technology')} 
                 required
                 sx={{ width: '100%' }}
               >
@@ -160,7 +162,7 @@ const EditTechnologyPage = () => {
                     label: tech.technology_name,
                   }))}
                   loading={loadingList}
-                  placeholder={loadingList ? 'Loading technologies...' : 'Select a technology'}
+                  placeholder={loadingList ? t('loadingTechnologies') : t('selectTechnology')}
                 />
               </FormControl>
             </Box>
@@ -200,13 +202,13 @@ const EditTechnologyPage = () => {
                   padding: '12px 24px',
                 }}
               >
-                Edit Technology
+                {t('editTechnologyButton')}
               </Button>
             </Box>
 
             {technologiesList.length === 0 && !loadingList && (
               <Typography variant="medium" sx={{ color: ColorVariants.technology.text, opacity: 0.7 }}>
-                No technologies available to edit.
+                {t('noTechnologiesAvailable')}
               </Typography>
             )}
           </Box>

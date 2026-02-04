@@ -1,11 +1,13 @@
 import { Button, Typography } from '@airbus/components-react';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ActionColors, ActionColorsHover, ColorVariants } from '../../constants';
 import './createDB.css';
 
 const TechnologyMenu = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('create_db');
 
   return (
     <Box 
@@ -27,7 +29,7 @@ const TechnologyMenu = () => {
           fontWeight: 600,
         }}
       >
-        Technology Operations
+        {t('technologyOperations')}
       </Typography>
       
       <Box 
@@ -55,7 +57,7 @@ const TechnologyMenu = () => {
             fontWeight: 500,
           }}
         >
-          Select an operation
+          {t('selectOperation')}
         </Typography>
         
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
@@ -81,7 +83,7 @@ const TechnologyMenu = () => {
               },
             }}
           >
-            Create New Technology
+            {t('createNewTechnology')}
           </Box>
           
           <Box
@@ -106,7 +108,7 @@ const TechnologyMenu = () => {
               },
             }}
           >
-            Modify Existing Technology
+            {t('modifyExistingTechnology')}
           </Box>
         </Box>
         
@@ -115,7 +117,7 @@ const TechnologyMenu = () => {
             variant="ghost"
             onClick={() => navigate('/create-database')}
           >
-            Back to Database Operations
+            {t('backToDatabaseOperations')}
           </Button>
         </Box>
       </Box>

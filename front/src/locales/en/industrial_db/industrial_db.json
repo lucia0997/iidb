@@ -1,0 +1,15 @@
+{
+  "title": "Industrial Database Mapping",
+  "selectParametersToVisualize": "Select Parameters to be visualized:",
+  "parameterSelected": "{{count}} parameter selected",
+  "parametersSelected": "{{count}} parameters selected",
+  "clearAll": "Clear all",
+  "applyFilters": "Apply Filters",
+  "reset": "Reset",
+  "plantsProgrammes": "Plants / Programmes",
+  "technologies": "Technologies",
+  "strategies": "Strategies",
+  "processes": "Processes",
+  "projects": "Projects"
+}
+
