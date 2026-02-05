@@ -62,7 +62,6 @@ const EditTechnologyPage = () => {
       className="createDBContainer" 
       sx={{ 
         backgroundColor: ColorVariants.technology.clear,
-        minHeight: '100vh',
         padding: '24px',
         display: 'flex',
         flexDirection: 'column',

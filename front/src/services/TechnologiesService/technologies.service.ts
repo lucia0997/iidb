@@ -60,19 +60,24 @@ export interface TRLData {
     trl_cost?: number;
 }
 
+export interface OptionItem {
+    id: number;
+    name: string;
+}
+
 export interface CreateTechnologyPayload {
     technology_name: string;
     current_trl: number;
-    physical_technology_cluster?: string;
-    digital_technology_cluster?: string;
-    product_roadmap?: string;
-    technology_roadmap?: string;
+    physical_technology_cluster?: number; // ID en lugar de string
+    digital_technology_cluster?: number; // ID en lugar de string
+    product_roadmap?: number; // ID en lugar de string
+    technology_roadmap?: number; // ID en lugar de string
     technology_description?: string;
     dependencies?: string[]; // Lista de strings
-    fom_type?: string;
+    fom_type?: number; // ID en lugar de string
     fom_value_percent?: number;
-    targeted_programmes?: string[]; // Lista de strings
-    ac_application?: string;
+    targeted_programmes?: number[]; // Lista de IDs en lugar de strings
+    ac_application?: number; // ID en lugar de string
     trls?: TRLData[]; // Lista de TRLs
 }
 
@@ -184,4 +189,40 @@ export async function getTechnologiesList(
         console.error('Error fetching technologies list:', error);
         throw error;
     }
+}
+
+// Funciones para obtener las opciones de las tablas
+export async function getPhysicalTechnologyClusters(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/physical-technology-clusters/');
+    return data;
+}
+
+export async function getDigitalTechnologyClusters(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/digital-technology-clusters/');
+    return data;
+}
+
+export async function getProductRoadmaps(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/product-roadmaps/');
+    return data;
+}
+
+export async function getTechnologyRoadmaps(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/technology-roadmaps/');
+    return data;
+}
+
+export async function getFoMTypes(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/fom-types/');
+    return data;
+}
+
+export async function getTargetedProgrammes(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/targeted-programmes/');
+    return data;
+}
+
+export async function getACApplications(api: AxiosHttpClient): Promise<OptionItem[]> {
+    const { data } = await api.get<OptionItem[]>('/ac-applications/');
+    return data;
 }

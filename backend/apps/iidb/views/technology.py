@@ -21,8 +21,8 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
     serializer_class = TechnologySerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["current_trl", "fom_type"]
-    search_fields = ["technology_name", "product_roadmap", "technology_roadmap", "ac_application", "targeted_programmes"]
+    filterset_fields = ["current_trl", "fom_type", "physical_technology_cluster", "digital_technology_cluster", "product_roadmap", "technology_roadmap", "ac_application"]
+    search_fields = ["technology_name", "product_roadmap__name", "technology_roadmap__name", "ac_application__name", "fom_type__name", "physical_technology_cluster__name", "digital_technology_cluster__name"]
     ordering_fields = ["technology_name", "current_trl", "fom_value_percent"]
 
     @action(detail=False, methods=["GET"], url_path="rows")
@@ -261,8 +261,8 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST,
                             )
 
-                # Sustituimos el payload original por la lista de IDs
-                data["trls"] = [t.id for t in trl_instances]
+                # Sustituimos el payload original por la lista de IDs (campo write-only trls_ids)
+                data["trls_ids"] = [t.id for t in trl_instances]
 
                 serializer = self.get_serializer(data=data)
                 if serializer.is_valid():

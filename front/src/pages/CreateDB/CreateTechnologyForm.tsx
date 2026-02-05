@@ -1,12 +1,27 @@
 import { useState, FormEvent, useEffect } from 'react';
-import { Button, FormControl, Input, Typography } from '@airbus/components-react';
+import { Button, FormControl, Input, Typography, Select } from '@airbus/components-react';
 import { Box, TextField, Chip, IconButton } from '@mui/material';
 import { Visibility, Close } from '@mui/icons-material';
 import { DFModal, DFModalContent, DFModalFooter, DFModalHeader } from '@df/ui';
 import { useApiClient } from '@df/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { createTechnology, checkTechnologyName, getTechnology, updateTechnology, CreateTechnologyPayload, TRLData } from '../../services/TechnologiesService/technologies.service';
+import { 
+  createTechnology, 
+  checkTechnologyName, 
+  getTechnology, 
+  updateTechnology, 
+  CreateTechnologyPayload, 
+  TRLData,
+  OptionItem,
+  getPhysicalTechnologyClusters,
+  getDigitalTechnologyClusters,
+  getProductRoadmaps,
+  getTechnologyRoadmaps,
+  getFoMTypes,
+  getTargetedProgrammes,
+  getACApplications
+} from '../../services/TechnologiesService/technologies.service';
 import { ColorVariants } from '../../constants';
 import './createDB.css';
 
@@ -39,26 +54,80 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     trl_cost: undefined,
   });
   const [trlModalError, setTrlModalError] = useState<string | null>(null);
+  const [trlNumberInput, setTrlNumberInput] = useState<string>('1');
 
   // Campos del formulario
   const [formData, setFormData] = useState<CreateTechnologyPayload>({
     technology_name: '',
     current_trl: 1,
-    physical_technology_cluster: '',
-    digital_technology_cluster: '',
-    product_roadmap: '',
-    technology_roadmap: '',
+    physical_technology_cluster: undefined,
+    digital_technology_cluster: undefined,
+    product_roadmap: undefined,
+    technology_roadmap: undefined,
     technology_description: '',
     dependencies: [],
-    fom_type: '',
+    fom_type: undefined,
     fom_value_percent: undefined,
     targeted_programmes: [],
-    ac_application: '',
+    ac_application: undefined,
   });
 
   // Campos para listas (se convierten a arrays)
   const [dependenciesText, setDependenciesText] = useState('');
   const [targetedProgrammesText, setTargetedProgrammesText] = useState('');
+  const [targetedProgrammesSelectValue, setTargetedProgrammesSelectValue] = useState<string>('');
+  const [targetedProgrammesSelectKey, setTargetedProgrammesSelectKey] = useState<number>(0);
+
+  // Opciones para los comboboxes
+  const [physicalClusters, setPhysicalClusters] = useState<OptionItem[]>([]);
+  const [digitalClusters, setDigitalClusters] = useState<OptionItem[]>([]);
+  const [productRoadmaps, setProductRoadmaps] = useState<OptionItem[]>([]);
+  const [technologyRoadmaps, setTechnologyRoadmaps] = useState<OptionItem[]>([]);
+  const [fomTypes, setFomTypes] = useState<OptionItem[]>([]);
+  const [targetedProgrammesOptions, setTargetedProgrammesOptions] = useState<OptionItem[]>([]);
+  const [acApplications, setAcApplications] = useState<OptionItem[]>([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+
+  // Cargar opciones al inicio
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
+        setLoadingOptions(true);
+        const [
+          physical,
+          digital,
+          product,
+          technology,
+          fom,
+          targeted,
+          ac
+        ] = await Promise.all([
+          getPhysicalTechnologyClusters(api),
+          getDigitalTechnologyClusters(api),
+          getProductRoadmaps(api),
+          getTechnologyRoadmaps(api),
+          getFoMTypes(api),
+          getTargetedProgrammes(api),
+          getACApplications(api),
+        ]);
+        
+        setPhysicalClusters(physical);
+        setDigitalClusters(digital);
+        setProductRoadmaps(product);
+        setTechnologyRoadmaps(technology);
+        setFomTypes(fom);
+        setTargetedProgrammesOptions(targeted);
+        setAcApplications(ac);
+      } catch (err: any) {
+        console.error('Error loading options:', err);
+        setError(t('errorLoadingOptions'));
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    
+    loadOptions();
+  }, [api, t]);
 
   // Cargar datos en modo edición
   useEffect(() => {
@@ -73,27 +142,58 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           setTechnologyName(technology.technology_name);
           
           // Cargar datos del formulario
+          // Los campos de opciones ahora vienen como objetos con id y name, o como números (IDs)
+          const getOptionId = (value: any): number | undefined => {
+            if (typeof value === 'number') {
+              return value;
+            }
+            if (typeof value === 'object' && value !== null && 'id' in value) {
+              return (value as { id: number }).id;
+            }
+            return undefined;
+          };
+          
+          const physicalClusterId = getOptionId(technology.physical_technology_cluster);
+          const digitalClusterId = getOptionId(technology.digital_technology_cluster);
+          const productRoadmapId = getOptionId(technology.product_roadmap);
+          const technologyRoadmapId = getOptionId(technology.technology_roadmap);
+          const fomTypeId = getOptionId(technology.fom_type);
+          const acApplicationId = getOptionId(technology.ac_application);
+          
+          // Para targeted_programmes, puede venir como array de objetos o array de números
+          let targetedProgrammesIds: number[] = [];
+          if (technology.targeted_programmes && Array.isArray(technology.targeted_programmes)) {
+            targetedProgrammesIds = technology.targeted_programmes.map((tp: any) => 
+              typeof tp === 'object' ? tp.id : (typeof tp === 'number' ? tp : undefined)
+            ).filter((id: any) => id !== undefined);
+          }
+          
           setFormData({
             technology_name: technology.technology_name || '',
             current_trl: technology.current_trl || 1,
-            physical_technology_cluster: technology.physical_technology_cluster || '',
-            digital_technology_cluster: technology.digital_technology_cluster || '',
-            product_roadmap: technology.product_roadmap || '',
-            technology_roadmap: technology.technology_roadmap || '',
+            physical_technology_cluster: physicalClusterId,
+            digital_technology_cluster: digitalClusterId,
+            product_roadmap: productRoadmapId,
+            technology_roadmap: technologyRoadmapId,
             technology_description: technology.technology_description || '',
             dependencies: technology.dependencies || [],
-            fom_type: technology.fom_type || '',
+            fom_type: fomTypeId,
             fom_value_percent: technology.fom_value_percent || undefined,
-            targeted_programmes: technology.targeted_programmes || [],
-            ac_application: technology.ac_application || '',
+            targeted_programmes: targetedProgrammesIds,
+            ac_application: acApplicationId,
           });
           
           // Cargar listas como texto
           if (technology.dependencies && Array.isArray(technology.dependencies)) {
             setDependenciesText(technology.dependencies.join(', '));
           }
+          
+          // Para targeted_programmes, mostrar los nombres si vienen como objetos
           if (technology.targeted_programmes && Array.isArray(technology.targeted_programmes)) {
-            setTargetedProgrammesText(technology.targeted_programmes.join(', '));
+            const names = technology.targeted_programmes.map((tp: any) => 
+              typeof tp === 'object' ? tp.name : String(tp)
+            );
+            setTargetedProgrammesText(names.join(', '));
           }
           
           // Cargar TRLs
@@ -141,6 +241,99 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     }));
   };
 
+  const handleFoMValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Permitir vacío
+    if (value === '') {
+      setFormData((prev) => ({
+        ...prev,
+        fom_value_percent: undefined,
+      }));
+      return;
+    }
+    
+    // Solo permitir números y un punto decimal
+    if (!/^[0-9]*\.?[0-9]*$/.test(value)) {
+      return; // No actualizar si contiene caracteres inválidos
+    }
+    
+    // Convertir a número
+    const numValue = parseFloat(value);
+    
+    // Si es un número válido y está en el rango 0-100
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+      setFormData((prev) => ({
+        ...prev,
+        fom_value_percent: numValue,
+      }));
+    } else if (numValue > 100) {
+      // Si es mayor a 100, limitar a 100
+      setFormData((prev) => ({
+        ...prev,
+        fom_value_percent: 100,
+      }));
+      // Actualizar el input para mostrar 100
+      e.target.value = '100';
+    }
+    // Si el valor es menor a 0 o no es un número válido, no hacer nada
+  };
+
+  const handleTrlNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Solo permitir números enteros (string) para que el usuario pueda borrar y reescribir
+    if (!/^[0-9]*$/.test(value)) {
+      return; // No actualizar si contiene caracteres inválidos
+    }
+    
+    setTrlNumberInput(value);
+  };
+
+  const handleTrlYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Permitir vacío
+    if (value === '') {
+      setTrlFormData((prev) => ({ ...prev, trl_year: undefined }));
+      return;
+    }
+    
+    // Solo permitir números enteros
+    if (!/^[0-9]*$/.test(value)) {
+      return; // No actualizar si contiene caracteres inválidos
+    }
+    
+    const numValue = parseInt(value, 10);
+    
+    if (!isNaN(numValue) && numValue >= 0) {
+      // Guardamos el número; las validaciones de rango se hacen en onBlur / handleAddTrl
+      setTrlFormData((prev) => ({ ...prev, trl_year: numValue }));
+    }
+  };
+
+  const handleTrlCostChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Permitir vacío
+    if (value === '') {
+      setTrlFormData((prev) => ({ ...prev, trl_cost: undefined }));
+      return;
+    }
+    
+    // Solo permitir números y un punto decimal
+    if (!/^[0-9]*\.?[0-9]*$/.test(value)) {
+      return; // No actualizar si contiene caracteres inválidos
+    }
+    
+    const numValue = parseFloat(value);
+    
+    // Permitir cualquier número positivo
+    if (!isNaN(numValue) && numValue >= 0) {
+      setTrlFormData((prev) => ({ ...prev, trl_cost: numValue }));
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -155,27 +348,22 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           .map((item) => item.trim())
           .filter((item) => item.length > 0);
 
-        const targetedProgrammes = targetedProgrammesText
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item.length > 0);
-
-        const payload: CreateTechnologyPayload = {
+        const payload: any = {
           technology_name: formData.technology_name,
           current_trl: formData.current_trl,
           trls: trls,
         };
 
-        if (formData.physical_technology_cluster) {
+        if (formData.physical_technology_cluster !== undefined && formData.physical_technology_cluster !== null) {
           payload.physical_technology_cluster = formData.physical_technology_cluster;
         }
-        if (formData.digital_technology_cluster) {
+        if (formData.digital_technology_cluster !== undefined && formData.digital_technology_cluster !== null) {
           payload.digital_technology_cluster = formData.digital_technology_cluster;
         }
-        if (formData.product_roadmap) {
+        if (formData.product_roadmap !== undefined && formData.product_roadmap !== null) {
           payload.product_roadmap = formData.product_roadmap;
         }
-        if (formData.technology_roadmap) {
+        if (formData.technology_roadmap !== undefined && formData.technology_roadmap !== null) {
           payload.technology_roadmap = formData.technology_roadmap;
         }
         if (formData.technology_description) {
@@ -184,16 +372,16 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         if (dependencies.length > 0) {
           payload.dependencies = dependencies;
         }
-        if (formData.fom_type) {
+        if (formData.fom_type !== undefined && formData.fom_type !== null) {
           payload.fom_type = formData.fom_type;
         }
         if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
           payload.fom_value_percent = formData.fom_value_percent;
         }
-        if (targetedProgrammes.length > 0) {
-          payload.targeted_programmes = targetedProgrammes;
+        if (formData.targeted_programmes && formData.targeted_programmes.length > 0) {
+          payload.targeted_programmes = formData.targeted_programmes;
         }
-        if (formData.ac_application) {
+        if (formData.ac_application !== undefined && formData.ac_application !== null) {
           payload.ac_application = formData.ac_application;
         }
 
@@ -216,26 +404,21 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           .map((item) => item.trim())
           .filter((item) => item.length > 0);
 
-        const targetedProgrammes = targetedProgrammesText
-          .split(',')
-          .map((item) => item.trim())
-          .filter((item) => item.length > 0);
-
-        const payload: CreateTechnologyPayload = {
+        const payload: any = {
           technology_name: formData.technology_name,
           current_trl: formData.current_trl,
         };
 
-        if (formData.physical_technology_cluster) {
+        if (formData.physical_technology_cluster !== undefined && formData.physical_technology_cluster !== null) {
           payload.physical_technology_cluster = formData.physical_technology_cluster;
         }
-        if (formData.digital_technology_cluster) {
+        if (formData.digital_technology_cluster !== undefined && formData.digital_technology_cluster !== null) {
           payload.digital_technology_cluster = formData.digital_technology_cluster;
         }
-        if (formData.product_roadmap) {
+        if (formData.product_roadmap !== undefined && formData.product_roadmap !== null) {
           payload.product_roadmap = formData.product_roadmap;
         }
-        if (formData.technology_roadmap) {
+        if (formData.technology_roadmap !== undefined && formData.technology_roadmap !== null) {
           payload.technology_roadmap = formData.technology_roadmap;
         }
         if (formData.technology_description) {
@@ -244,16 +427,16 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         if (dependencies.length > 0) {
           payload.dependencies = dependencies;
         }
-        if (formData.fom_type) {
+        if (formData.fom_type !== undefined && formData.fom_type !== null) {
           payload.fom_type = formData.fom_type;
         }
         if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
           payload.fom_value_percent = formData.fom_value_percent;
         }
-        if (targetedProgrammes.length > 0) {
-          payload.targeted_programmes = targetedProgrammes;
+        if (formData.targeted_programmes && formData.targeted_programmes.length > 0) {
+          payload.targeted_programmes = formData.targeted_programmes;
         }
-        if (formData.ac_application) {
+        if (formData.ac_application !== undefined && formData.ac_application !== null) {
           payload.ac_application = formData.ac_application;
         }
         
@@ -278,28 +461,23 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         .map((item) => item.trim())
         .filter((item) => item.length > 0);
 
-      const targetedProgrammes = targetedProgrammesText
-        .split(',')
-        .map((item) => item.trim())
-        .filter((item) => item.length > 0);
-
       // Limpiar campos undefined y vacíos antes de enviar
-      const payload: CreateTechnologyPayload = {
+      const payload: any = {
         technology_name: formData.technology_name,
         current_trl: formData.current_trl,
       };
 
-      // Agregar solo campos que tengan valor
-      if (formData.physical_technology_cluster) {
+      // Agregar solo campos que tengan valor (no undefined, no null, no 0 para números)
+      if (formData.physical_technology_cluster !== undefined && formData.physical_technology_cluster !== null) {
         payload.physical_technology_cluster = formData.physical_technology_cluster;
       }
-      if (formData.digital_technology_cluster) {
+      if (formData.digital_technology_cluster !== undefined && formData.digital_technology_cluster !== null) {
         payload.digital_technology_cluster = formData.digital_technology_cluster;
       }
-      if (formData.product_roadmap) {
+      if (formData.product_roadmap !== undefined && formData.product_roadmap !== null) {
         payload.product_roadmap = formData.product_roadmap;
       }
-      if (formData.technology_roadmap) {
+      if (formData.technology_roadmap !== undefined && formData.technology_roadmap !== null) {
         payload.technology_roadmap = formData.technology_roadmap;
       }
       if (formData.technology_description) {
@@ -308,16 +486,16 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       if (dependencies.length > 0) {
         payload.dependencies = dependencies;
       }
-      if (formData.fom_type) {
+      if (formData.fom_type !== undefined && formData.fom_type !== null) {
         payload.fom_type = formData.fom_type;
       }
       if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
         payload.fom_value_percent = formData.fom_value_percent;
       }
-      if (targetedProgrammes.length > 0) {
-        payload.targeted_programmes = targetedProgrammes;
+      if (formData.targeted_programmes && formData.targeted_programmes.length > 0) {
+        payload.targeted_programmes = formData.targeted_programmes;
       }
-      if (formData.ac_application) {
+      if (formData.ac_application !== undefined && formData.ac_application !== null) {
         payload.ac_application = formData.ac_application;
       }
       
@@ -338,17 +516,18 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         setFormData({
           technology_name: '',
           current_trl: 1,
-          physical_technology_cluster: '',
-          digital_technology_cluster: '',
-          product_roadmap: '',
-          technology_roadmap: '',
+          physical_technology_cluster: undefined,
+          digital_technology_cluster: undefined,
+          product_roadmap: undefined,
+          technology_roadmap: undefined,
           technology_description: '',
           dependencies: [],
-          fom_type: '',
+          fom_type: undefined,
           fom_value_percent: undefined,
           targeted_programmes: [],
-          ac_application: '',
+          ac_application: undefined,
         });
+        setTargetedProgrammesSelectKey(prev => prev + 1);
         setDependenciesText('');
         setTargetedProgrammesText('');
         setTrls([]);
@@ -392,6 +571,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     if (trl) {
       setEditingTrl(trl);
       setTrlFormData(trl);
+      setTrlNumberInput(String(trl.trl_number ?? ''));
     } else {
       setEditingTrl(null);
       setTrlFormData({
@@ -399,6 +579,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         trl_year: undefined,
         trl_cost: undefined,
       });
+      setTrlNumberInput('');
     }
     setShowTrlModal(true);
   };
@@ -412,20 +593,49 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       trl_year: undefined,
       trl_cost: undefined,
     });
+    setTrlNumberInput('1');
   };
 
   const handleAddTrl = () => {
-    // Validate that TRL Year is provided
-    if (!trlFormData.trl_year) {
-      setTrlModalError(t('trlYearRequired'));
+    // Validar TRL Number (1-9) a partir del input de texto
+    const parsedTrlNumber = parseInt(trlNumberInput, 10);
+    if (isNaN(parsedTrlNumber) || parsedTrlNumber < 1 || parsedTrlNumber > 9) {
+      setTrlModalError(
+        t('trlNumberInvalid') ||
+          'TRL Number inválido. Debe ser un número entero entre 1 y 9.'
+      );
+      return;
+    }
+
+    const newTrlData: TRLData = {
+      ...trlFormData,
+      trl_number: parsedTrlNumber,
+    };
+
+    // Validar que TRL Year esté informado y en rango válido (4 dígitos, 1900-2999)
+    if (
+      newTrlData.trl_year === undefined ||
+      newTrlData.trl_year === null ||
+      newTrlData.trl_year < 1900 ||
+      newTrlData.trl_year >= 3000
+    ) {
+      setTrlModalError(t('trlYearInvalid'));
+      return;
+    }
+
+    // Validar que TRL Cost sea obligatorio (no opcional)
+    if (newTrlData.trl_cost === undefined || newTrlData.trl_cost === null) {
+      setTrlModalError(
+        t('trlCostRequired') || 'TRL Cost (K€) es obligatorio.'
+      );
       return;
     }
 
     // Check if TRL number + year combination already exists (only when adding new, not editing)
     if (!editingTrl) {
       const existingTrl = trls.find(t => 
-        t.trl_number === trlFormData.trl_number && 
-        t.trl_year === trlFormData.trl_year
+        t.trl_number === newTrlData.trl_number && 
+        t.trl_year === newTrlData.trl_year
       );
       
       if (existingTrl) {
@@ -435,8 +645,8 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     } else {
       // When editing, check if the new combination conflicts with another TRL (excluding the one being edited)
       const conflictingTrl = trls.find(t => 
-        t.trl_number === trlFormData.trl_number && 
-        t.trl_year === trlFormData.trl_year &&
+        t.trl_number === newTrlData.trl_number && 
+        t.trl_year === newTrlData.trl_year &&
         !(t.trl_number === editingTrl.trl_number && t.trl_year === editingTrl.trl_year)
       );
       
@@ -450,12 +660,12 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
       // Update existing TRL - find by original trl_number and trl_year
       setTrls(trls.map(t => 
         t.trl_number === editingTrl.trl_number && t.trl_year === editingTrl.trl_year
-          ? trlFormData 
+          ? newTrlData 
           : t
       ));
     } else {
       // Add new TRL
-      setTrls([...trls, trlFormData]);
+      setTrls([...trls, newTrlData]);
     }
     
     setTrlModalError(null);
@@ -467,9 +677,9 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
   };
 
   return (
-    <Box className="createTechnologyContainer" sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+    <Box className="createTechnologyContainer" sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
       {/* Fixed header with back button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '16px', flexShrink: 0 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '1rem', flexShrink: 0 }}>
         <Button
           variant="ghost"
           onClick={() => navigate('/create-database/technology')}
@@ -490,10 +700,12 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         flex: 1, 
         overflowY: 'auto', 
         overflowX: 'hidden',
-        paddingRight: '8px',
-        marginBottom: '16px'
+        paddingRight: '0.5rem',
+        paddingLeft: '0.5rem',
+        marginBottom: '1rem',
+        minHeight: 0
       }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 8px' }}>
         {/* Technology Name */}
         <FormControl label={t('technologyName')} required error={!!error && !formData.technology_name}>
           <Input
@@ -506,36 +718,80 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         
         {/* Physical Technology Cluster */}
         <FormControl label={t('physicalTechnologyCluster')}>
-          <Input
-            value={formData.physical_technology_cluster || ''}
-            onChange={handleInputChange('physical_technology_cluster')}
+          <Select
+            value={formData.physical_technology_cluster ? String(formData.physical_technology_cluster) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                physical_technology_cluster: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={physicalClusters.map((cluster) => ({
+              value: String(cluster.id),
+              label: cluster.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('physicalTechnologyClusterPlaceholder')}
           />
         </FormControl>
 
         {/* Digital Technology Cluster */}
         <FormControl label={t('digitalTechnologyCluster')}>
-          <Input
-            value={formData.digital_technology_cluster || ''}
-            onChange={handleInputChange('digital_technology_cluster')}
+          <Select
+            value={formData.digital_technology_cluster ? String(formData.digital_technology_cluster) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                digital_technology_cluster: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={digitalClusters.map((cluster) => ({
+              value: String(cluster.id),
+              label: cluster.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('digitalTechnologyClusterPlaceholder')}
           />
         </FormControl>
 
         {/* Product Roadmap */}
         <FormControl label={t('productRoadmap')}>
-          <Input
-            value={formData.product_roadmap || ''}
-            onChange={handleInputChange('product_roadmap')}
+          <Select
+            value={formData.product_roadmap ? String(formData.product_roadmap) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                product_roadmap: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={productRoadmaps.map((roadmap) => ({
+              value: String(roadmap.id),
+              label: roadmap.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('productRoadmapPlaceholder')}
           />
         </FormControl>
 
         {/* Technology Roadmap */}
         <FormControl label={t('technologyRoadmap')}>
-          <Input
-            value={formData.technology_roadmap || ''}
-            onChange={handleInputChange('technology_roadmap')}
+          <Select
+            value={formData.technology_roadmap ? String(formData.technology_roadmap) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                technology_roadmap: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={technologyRoadmaps.map((roadmap) => ({
+              value: String(roadmap.id),
+              label: roadmap.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('technologyRoadmapPlaceholder')}
           />
         </FormControl>
@@ -663,9 +919,20 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
 
         {/* FoM Type */}
         <FormControl label={t('fomType')}>
-          <Input
-            value={formData.fom_type || ''}
-            onChange={handleInputChange('fom_type')}
+          <Select
+            value={formData.fom_type ? String(formData.fom_type) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                fom_type: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={fomTypes.map((fomType) => ({
+              value: String(fomType.id),
+              label: fomType.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('fomTypePlaceholder')}
           />
         </FormControl>
@@ -673,34 +940,105 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         {/* FoM Value (%) */}
         <FormControl label={t('fomValue')}>
           <Input
-            type="number"
-            step="0.01"
-            value={formData.fom_value_percent || ''}
-            onChange={handleNumberChange('fom_value_percent')}
+            type="text"
+            inputMode="decimal"
+            value={formData.fom_value_percent !== undefined && formData.fom_value_percent !== null ? String(formData.fom_value_percent) : ''}
+            onChange={handleFoMValueChange}
+            onKeyDown={(e) => {
+              // Permitir: números, punto, backspace, delete, tab, escape, enter, y teclas de navegación
+              const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+              const isNumber = /^[0-9]$/.test(e.key);
+              const isDecimal = e.key === '.' && !e.currentTarget.value.includes('.');
+              const isAllowedKey = allowedKeys.includes(e.key);
+              
+              if (!isNumber && !isDecimal && !isAllowedKey && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+              }
+            }}
             placeholder={t('fomValuePlaceholder')}
+            min={0}
+            max={100}
           />
         </FormControl>
 
         {/* Targeted Programmes */}
         <FormControl label={t('targetedProgrammes')}>
-          <Input
-            value={targetedProgrammesText}
-            onChange={(e) => setTargetedProgrammesText(e.target.value)}
-            placeholder={t('targetedProgrammesPlaceholder')}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <Select
+              key={`targeted-programmes-${targetedProgrammesSelectKey}`}
+              value=""
+              onChange={(event: any) => {
+                const value = event?.target?.value;
+                if (value && value !== '') {
+                  const id = parseInt(value, 10);
+                  if (!isNaN(id) && !formData.targeted_programmes?.includes(id)) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      targeted_programmes: [...(prev.targeted_programmes || []), id],
+                    }));
+                    // Forzar re-render del Select para limpiarlo
+                    setTargetedProgrammesSelectKey(prev => prev + 1);
+                  }
+                }
+              }}
+              options={targetedProgrammesOptions
+                .filter(opt => !formData.targeted_programmes?.includes(opt.id))
+                .map((programme) => ({
+                  value: String(programme.id),
+                  label: programme.name,
+                }))}
+              loading={loadingOptions}
+              placeholder={t('targetedProgrammesPlaceholder')}
+            />
+            {formData.targeted_programmes && formData.targeted_programmes.length > 0 && (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+                {formData.targeted_programmes.map((id) => {
+                  const option = targetedProgrammesOptions.find(opt => opt.id === id);
+                  return option ? (
+                    <Chip
+                      key={id}
+                      label={option.name}
+                      onDelete={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          targeted_programmes: prev.targeted_programmes?.filter(pid => pid !== id) || [],
+                        }));
+                      }}
+                      sx={{
+                        backgroundColor: ColorVariants.technology.light,
+                        color: ColorVariants.technology.text,
+                        border: `1px solid ${ColorVariants.technology.main}`,
+                      }}
+                    />
+                  ) : null;
+                })}
+              </Box>
+            )}
+          </Box>
         </FormControl>
 
         {/* A/C Application */}
         <FormControl label={t('acApplication')}>
-          <Input
-            value={formData.ac_application || ''}
-            onChange={handleInputChange('ac_application')}
+          <Select
+            value={formData.ac_application ? String(formData.ac_application) : ''}
+            onChange={(event: any) => {
+              const value = event?.target?.value;
+              setFormData((prev) => ({
+                ...prev,
+                ac_application: value ? parseInt(value, 10) : undefined,
+              }));
+            }}
+            options={acApplications.map((application) => ({
+              value: String(application.id),
+              label: application.name,
+            }))}
+            loading={loadingOptions}
             placeholder={t('acApplicationPlaceholder')}
           />
         </FormControl>
 
         {/* Dependencies */}
-        <FormControl label={t('dependencies')}>
+        <FormControl label={t('dependencies')} sx={{ marginBottom: '24px' }}>
           <Input
             value={dependenciesText}
             onChange={(e) => setDependenciesText(e.target.value)}
@@ -775,36 +1113,42 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             
             <FormControl label={t('trlNumber')} required>
               <Input
-                type="number"
-                min="1"
-                max="9"
-                value={trlFormData.trl_number}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value) || 1;
-                  setTrlFormData((prev) => ({ ...prev, trl_number: value }));
+                type="text"
+                inputMode="numeric"
+                value={trlNumberInput}
+                onChange={handleTrlNumberChange}
+                onKeyDown={(e) => {
+                  // Permitir: números, backspace, delete, tab, escape, enter, y teclas de navegación
+                  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+                  const isNumber = /^[0-9]$/.test(e.key);
+                  const isAllowedKey = allowedKeys.includes(e.key);
+                  
+                  if (!isNumber && !isAllowedKey && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                  }
                 }}
                 placeholder={t('trlNumberPlaceholder')}
                 required
                 disabled={!!editingTrl}
+                min={1}
+                max={9}
               />
             </FormControl>
 
             <FormControl label={t('trlYear')} required>
               <Input
-                type="number"
-                min="1900"
-                step="1"
-                value={trlFormData.trl_year || ''}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  if (inputValue === '') {
-                    setTrlFormData((prev) => ({ ...prev, trl_year: undefined }));
-                    return;
-                  }
-                  // Permitir escribir números (incluyendo números parciales mientras se escribe)
-                  const parsedValue = parseInt(inputValue, 10);
-                  if (!isNaN(parsedValue) && parsedValue >= 0) {
-                    setTrlFormData((prev) => ({ ...prev, trl_year: parsedValue }));
+                type="text"
+                inputMode="numeric"
+                value={trlFormData.trl_year !== undefined && trlFormData.trl_year !== null ? String(trlFormData.trl_year) : ''}
+                onChange={handleTrlYearChange}
+                onKeyDown={(e) => {
+                  // Permitir: números, backspace, delete, tab, escape, enter, y teclas de navegación
+                  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+                  const isNumber = /^[0-9]$/.test(e.key);
+                  const isAllowedKey = allowedKeys.includes(e.key);
+                  
+                  if (!isNumber && !isAllowedKey && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
                   }
                 }}
                 onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
@@ -812,7 +1156,13 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                   const inputValue = e.target.value;
                   if (inputValue !== '') {
                     const parsedValue = parseInt(inputValue, 10);
-                    if (isNaN(parsedValue) || parsedValue < 1900) {
+                    const isFourDigits = inputValue.length === 4;
+                    if (
+                      isNaN(parsedValue) ||
+                      !isFourDigits ||
+                      parsedValue < 1900 ||
+                      parsedValue >= 3000
+                    ) {
                       setTrlModalError(t('trlYearInvalid'));
                       setTrlFormData((prev) => ({ ...prev, trl_year: undefined }));
                     } else {
@@ -822,19 +1172,30 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
                 }}
                 placeholder={t('trlYearPlaceholder')}
                 required
+                min={1900}
               />
             </FormControl>
 
-            <FormControl label={t('trlCost')}>
+            <FormControl label={t('trlCost')} required>
               <Input
-                type="number"
-                step="0.01"
-                value={trlFormData.trl_cost || ''}
-                onChange={(e) => {
-                  const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
-                  setTrlFormData((prev) => ({ ...prev, trl_cost: value }));
+                type="text"
+                inputMode="decimal"
+                value={trlFormData.trl_cost !== undefined && trlFormData.trl_cost !== null ? String(trlFormData.trl_cost) : ''}
+                onChange={handleTrlCostChange}
+                onKeyDown={(e) => {
+                  // Permitir: números, punto, backspace, delete, tab, escape, enter, y teclas de navegación
+                  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+                  const isNumber = /^[0-9]$/.test(e.key);
+                  const isDecimal = e.key === '.' && !e.currentTarget.value.includes('.');
+                  const isAllowedKey = allowedKeys.includes(e.key);
+                  
+                  if (!isNumber && !isDecimal && !isAllowedKey && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                  }
                 }}
                 placeholder={t('trlCostPlaceholder')}
+                required
+                step="0.01"
               />
             </FormControl>
           </Box>

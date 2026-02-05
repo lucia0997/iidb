@@ -1,28 +1,74 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import empty
-from ..models import Technology, TRL, TechnologyTRL
+from ..models import (
+    Technology,
+    TRL,
+    TechnologyTRL,
+    PhysicalTechnologyCluster,
+    DigitalTechnologyCluster,
+    ProductRoadmap,
+    TechnologyRoadmap,
+    FoMType,
+    TargetedProgramme,
+    ACApplication,
+)
+
+
+
+class TRLSerializer(serializers.ModelSerializer):
+    trl_number = serializers.IntegerField(label=_("TRL Number"), required=True)
+    trl_year = serializers.IntegerField(
+        label=_("TRL Year"), required=False, allow_null=True
+    )
+    trl_cost = serializers.DecimalField(
+        label=_("TRL Cost"),
+        max_digits=14,
+        decimal_places=2,
+        required=False,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = TRL
+        fields = ["id", "trl_number", "trl_year", "trl_cost"]
 
 
 class TechnologySerializer(serializers.ModelSerializer):
-    physical_technology_cluster = serializers.CharField(
+    physical_technology_cluster = serializers.PrimaryKeyRelatedField(
+        queryset=PhysicalTechnologyCluster.objects.all(),
         label=_("Physical Technology Cluster"),
-        allow_blank=True,
         allow_null=True,
         required=False,
     )
-    digital_technology_cluster = serializers.CharField(
+    digital_technology_cluster = serializers.PrimaryKeyRelatedField(
+        queryset=DigitalTechnologyCluster.objects.all(),
         label=_("Digital Technology Cluster"),
-        allow_blank=True,
         allow_null=True,
         required=False,
     )
-    product_roadmap = serializers.CharField(label=_("Product Roadmap"), allow_blank=True, allow_null=True, required=False)
-    technology_roadmap = serializers.CharField(label=_("Technology Roadmap"), allow_blank=True, allow_null=True, required=False)
+    product_roadmap = serializers.PrimaryKeyRelatedField(
+        queryset=ProductRoadmap.objects.all(),
+        label=_("Product Roadmap"),
+        allow_null=True,
+        required=False,
+    )
+    technology_roadmap = serializers.PrimaryKeyRelatedField(
+        queryset=TechnologyRoadmap.objects.all(),
+        label=_("Technology Roadmap"),
+        allow_null=True,
+        required=False,
+    )
     technology_name = serializers.CharField(label=_("Technology Name"), allow_blank=False, allow_null=False, required=True)
     technology_description = serializers.CharField(label=_("Technology Description"), allow_blank=True, allow_null=True, required=False)
     dependencies = serializers.ListField(child=serializers.CharField(), label=_("Dependencies"), help_text=_("Same list of values as Technology Cluster"), required=False, allow_empty=True)
-    targeted_programmes = serializers.ListField(child=serializers.CharField(), label=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), required=False, allow_empty=True)
+    targeted_programmes = serializers.PrimaryKeyRelatedField(
+        queryset=TargetedProgramme.objects.all(),
+        many=True,
+        label=_("Targeted Programmes"),
+        required=False,
+        allow_empty=True,
+    )
     current_trl = serializers.IntegerField(
         label=_("Current TRL (1-9)"),
         required=True,
@@ -30,10 +76,30 @@ class TechnologySerializer(serializers.ModelSerializer):
         min_value=1,
         max_value=9,
     )
-    trls = serializers.PrimaryKeyRelatedField(queryset=TRL.objects.all(), many=True, label=_("TRLs"), required=False, allow_empty=True)
-    fom_type = serializers.CharField(label=_("FoM Type"), allow_blank=True, allow_null=True, required=False)
+    # Para escritura aceptamos IDs (campo write-only); para lectura devolvemos objetos TRL completos.
+    trls = TRLSerializer(many=True, label=_("TRLs"), read_only=True)
+    trls_ids = serializers.PrimaryKeyRelatedField(
+        source="trls",
+        queryset=TRL.objects.all(),
+        many=True,
+        label=_("TRLs"),
+        required=False,
+        allow_empty=True,
+        write_only=True,
+    )
+    fom_type = serializers.PrimaryKeyRelatedField(
+        queryset=FoMType.objects.all(),
+        label=_("FoM Type"),
+        allow_null=True,
+        required=False,
+    )
     fom_value_percent = serializers.DecimalField(label=_("FoM Value (%)"), max_digits=5, decimal_places=2, required=False, allow_null=True)
-    ac_application = serializers.CharField(label=_("A/C Application"), allow_blank=True, allow_null=True, required=False)
+    ac_application = serializers.PrimaryKeyRelatedField(
+        queryset=ACApplication.objects.all(),
+        label=_("A/C Application"),
+        allow_null=True,
+        required=False,
+    )
 
     class Meta:
         model = Technology
@@ -47,6 +113,7 @@ class TechnologySerializer(serializers.ModelSerializer):
             "technology_description",
             "current_trl",
             "trls",
+            "trls_ids",
             "dependencies",
             "fom_type",
             "fom_value_percent",
@@ -65,9 +132,6 @@ class TechnologySerializer(serializers.ModelSerializer):
 
     def validate_dependencies(self, value):
         return self._validate_string_list(value, "Dependencies")
-
-    def validate_targeted_programmes(self, value):
-        return self._validate_string_list(value, "Targeted Programmes")
 
     def validate_trls(self, value):
         if not value:

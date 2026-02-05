@@ -81,8 +81,10 @@
   "errorLoadingTechnologiesList": "Error loading technologies list",
   "loading": "Loading...",
   "trlYearRequired": "TRL Year is required",
-  "trlYearInvalid": "TRL Year must be a valid year (>= 1900)",
+  "trlYearInvalid": "TRL Year must be a valid 4-digit year between 1900 and 2999",
   "trlNumberYearUnique": "A TRL with this number and year already exists",
+  "trlNumberInvalid": "Invalid TRL Number. It must be an integer between 1 and 9.",
+  "trlCostRequired": "TRL Cost (K€) is required",
   "error": "Error",
   "success": "Success",
   "noTrlDataAdded": "No TRL data added yet. Click \"Add TRL Data\" to add TRL information."

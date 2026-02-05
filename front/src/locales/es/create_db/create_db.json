@@ -81,8 +81,10 @@
   "errorLoadingTechnologiesList": "Error al cargar la lista de tecnologías",
   "loading": "Cargando...",
   "trlYearRequired": "El año TRL es obligatorio",
-  "trlYearInvalid": "El año TRL debe ser un año válido (>= 1900)",
+  "trlYearInvalid": "Pon un año válido de 4 dígitos entre 1900 y 2999",
   "trlNumberYearUnique": "Ya existe un TRL con este número y año",
+  "trlNumberInvalid": "Número TRL inválido. Debe ser un número entero entre 1 y 9.",
+  "trlCostRequired": "El coste TRL (K€) es obligatorio",
   "error": "Error",
   "success": "Éxito",
   "noTrlDataAdded": "Aún no se han añadido datos TRL. Haz clic en \"Añadir Datos TRL\" para añadir información TRL."
