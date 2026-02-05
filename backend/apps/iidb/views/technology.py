@@ -17,12 +17,12 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
     """
     ViewSet for Technology — includes automatic 'columns' and 'rows' endpoints from ColumnsMixin.
     """
-    queryset = Technology.objects.all().order_by("technology_name")
+    queryset = Technology.objects.prefetch_related('fom_type', 'targeted_programmes', 'trls').all().order_by("technology_name")
     serializer_class = TechnologySerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["current_trl", "fom_type", "physical_technology_cluster", "digital_technology_cluster", "product_roadmap", "technology_roadmap", "ac_application"]
-    search_fields = ["technology_name", "product_roadmap__name", "technology_roadmap__name", "ac_application__name", "fom_type__name", "physical_technology_cluster__name", "digital_technology_cluster__name"]
+    search_fields = ["technology_name", "product_roadmap__name", "technology_roadmap__name", "ac_application__name", "fom_type__name", "targeted_programmes__name", "physical_technology_cluster__name", "digital_technology_cluster__name"]
     ordering_fields = ["technology_name", "current_trl", "fom_value_percent"]
 
     @action(detail=False, methods=["GET"], url_path="rows")

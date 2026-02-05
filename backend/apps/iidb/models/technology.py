@@ -149,11 +149,9 @@ class Technology(models.Model):
     current_trl = models.PositiveSmallIntegerField(verbose_name=_("Current TRL (1-9)"), choices=TRLLevel.choices, null=True, blank=True)
     trls = models.ManyToManyField(TRL, through="TechnologyTRL", related_name="technologies", verbose_name=_("TRLs"), blank=True)
     dependencies = models.JSONField(default=list, verbose_name=_("Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
-    fom_type = models.ForeignKey(
+    fom_type = models.ManyToManyField(
         'FoMType',
-        on_delete=models.SET_NULL,
         blank=True,
-        null=True,
         related_name='technologies',
         verbose_name=_("FoM Type"),
     )

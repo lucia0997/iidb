@@ -74,7 +74,7 @@ export interface CreateTechnologyPayload {
     technology_roadmap?: number; // ID en lugar de string
     technology_description?: string;
     dependencies?: string[]; // Lista de strings
-    fom_type?: number; // ID en lugar de string
+    fom_type?: number[]; // Lista de IDs en lugar de un solo ID
     fom_value_percent?: number;
     targeted_programmes?: number[]; // Lista de IDs en lugar de strings
     ac_application?: number; // ID en lugar de string

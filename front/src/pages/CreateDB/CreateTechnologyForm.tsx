@@ -66,7 +66,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
     technology_roadmap: undefined,
     technology_description: '',
     dependencies: [],
-    fom_type: undefined,
+    fom_type: [],
     fom_value_percent: undefined,
     targeted_programmes: [],
     ac_application: undefined,
@@ -77,6 +77,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
   const [targetedProgrammesText, setTargetedProgrammesText] = useState('');
   const [targetedProgrammesSelectValue, setTargetedProgrammesSelectValue] = useState<string>('');
   const [targetedProgrammesSelectKey, setTargetedProgrammesSelectKey] = useState<number>(0);
+  const [fomTypeSelectKey, setFomTypeSelectKey] = useState<number>(0);
 
   // Opciones para los comboboxes
   const [physicalClusters, setPhysicalClusters] = useState<OptionItem[]>([]);
@@ -157,7 +158,6 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           const digitalClusterId = getOptionId(technology.digital_technology_cluster);
           const productRoadmapId = getOptionId(technology.product_roadmap);
           const technologyRoadmapId = getOptionId(technology.technology_roadmap);
-          const fomTypeId = getOptionId(technology.fom_type);
           const acApplicationId = getOptionId(technology.ac_application);
           
           // Para targeted_programmes, puede venir como array de objetos o array de números
@@ -166,6 +166,20 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             targetedProgrammesIds = technology.targeted_programmes.map((tp: any) => 
               typeof tp === 'object' ? tp.id : (typeof tp === 'number' ? tp : undefined)
             ).filter((id: any) => id !== undefined);
+          }
+          
+          // Para fom_type, ahora también es un array (ManyToManyField)
+          let fomTypeIds: number[] = [];
+          if (technology.fom_type && Array.isArray(technology.fom_type)) {
+            fomTypeIds = technology.fom_type.map((ft: any) => 
+              typeof ft === 'object' ? ft.id : (typeof ft === 'number' ? ft : undefined)
+            ).filter((id: any) => id !== undefined);
+          } else if (technology.fom_type) {
+            // Compatibilidad: si viene como objeto único, convertirlo a array
+            const fomTypeId = getOptionId(technology.fom_type);
+            if (fomTypeId !== undefined) {
+              fomTypeIds = [fomTypeId];
+            }
           }
           
           setFormData({
@@ -177,7 +191,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
             technology_roadmap: technologyRoadmapId,
             technology_description: technology.technology_description || '',
             dependencies: technology.dependencies || [],
-            fom_type: fomTypeId,
+            fom_type: fomTypeIds,
             fom_value_percent: technology.fom_value_percent || undefined,
             targeted_programmes: targetedProgrammesIds,
             ac_application: acApplicationId,
@@ -372,7 +386,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         if (dependencies.length > 0) {
           payload.dependencies = dependencies;
         }
-        if (formData.fom_type !== undefined && formData.fom_type !== null) {
+        if (formData.fom_type && formData.fom_type.length > 0) {
           payload.fom_type = formData.fom_type;
         }
         if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
@@ -427,7 +441,7 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
         if (dependencies.length > 0) {
           payload.dependencies = dependencies;
         }
-        if (formData.fom_type !== undefined && formData.fom_type !== null) {
+        if (formData.fom_type && formData.fom_type.length > 0) {
           payload.fom_type = formData.fom_type;
         }
         if (formData.fom_value_percent !== undefined && formData.fom_value_percent !== null) {
@@ -522,12 +536,13 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
           technology_roadmap: undefined,
           technology_description: '',
           dependencies: [],
-          fom_type: undefined,
+          fom_type: [],
           fom_value_percent: undefined,
           targeted_programmes: [],
           ac_application: undefined,
         });
         setTargetedProgrammesSelectKey(prev => prev + 1);
+        setFomTypeSelectKey(prev => prev + 1);
         setDependenciesText('');
         setTargetedProgrammesText('');
         setTrls([]);
@@ -919,22 +934,58 @@ export const CreateTechnologyForm = ({ onSuccess, technologyId }: CreateTechnolo
 
         {/* FoM Type */}
         <FormControl label={t('fomType')}>
-          <Select
-            value={formData.fom_type ? String(formData.fom_type) : ''}
-            onChange={(event: any) => {
-              const value = event?.target?.value;
-              setFormData((prev) => ({
-                ...prev,
-                fom_type: value ? parseInt(value, 10) : undefined,
-              }));
-            }}
-            options={fomTypes.map((fomType) => ({
-              value: String(fomType.id),
-              label: fomType.name,
-            }))}
-            loading={loadingOptions}
-            placeholder={t('fomTypePlaceholder')}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <Select
+              key={`fom-type-${fomTypeSelectKey}`}
+              value=""
+              onChange={(event: any) => {
+                const value = event?.target?.value;
+                if (value && value !== '') {
+                  const id = parseInt(value, 10);
+                  if (!isNaN(id) && !formData.fom_type?.includes(id)) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      fom_type: [...(prev.fom_type || []), id],
+                    }));
+                    // Forzar re-render del Select para limpiarlo
+                    setFomTypeSelectKey(prev => prev + 1);
+                  }
+                }
+              }}
+              options={fomTypes
+                .filter(opt => !formData.fom_type?.includes(opt.id))
+                .map((fomType) => ({
+                  value: String(fomType.id),
+                  label: fomType.name,
+                }))}
+              loading={loadingOptions}
+              placeholder={t('fomTypePlaceholder')}
+            />
+            {formData.fom_type && formData.fom_type.length > 0 && (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+                {formData.fom_type.map((id) => {
+                  const option = fomTypes.find(opt => opt.id === id);
+                  return option ? (
+                    <Chip
+                      key={id}
+                      label={option.name}
+                      onDelete={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          fom_type: prev.fom_type?.filter(fid => fid !== id) || [],
+                        }));
+                      }}
+                      sx={{
+                        backgroundColor: ColorVariants.technology.light,
+                        color: ColorVariants.technology.text,
+                        border: `1px solid ${ColorVariants.technology.main}`,
+                      }}
+                    />
+                  ) : null;
+                })}
+              </Box>
+            )}
+          </Box>
         </FormControl>
 
         {/* FoM Value (%) */}

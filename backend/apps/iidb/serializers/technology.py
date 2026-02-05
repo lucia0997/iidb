@@ -89,9 +89,10 @@ class TechnologySerializer(serializers.ModelSerializer):
     )
     fom_type = serializers.PrimaryKeyRelatedField(
         queryset=FoMType.objects.all(),
+        many=True,
         label=_("FoM Type"),
-        allow_null=True,
         required=False,
+        allow_empty=True,
     )
     fom_value_percent = serializers.DecimalField(label=_("FoM Value (%)"), max_digits=5, decimal_places=2, required=False, allow_null=True)
     ac_application = serializers.PrimaryKeyRelatedField(
