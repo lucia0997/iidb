@@ -51,7 +51,7 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
 
         if wants_trls:
             qs = self.filter_queryset(
-                self.get_queryset().prefetch_related("trls")
+                self.get_queryset().prefetch_related("trls", "fom_type", "targeted_programmes")
             )
             page = self.paginate_queryset(qs)
 
@@ -62,8 +62,46 @@ class TechnologyViewSet(ColumnsMixin, viewsets.ModelViewSet):
             serializer = TechnologyWithTRLsSerializer(qs, many=True)
             return Response(serializer.data)
 
-        # Sin TRLs: comportamiento estándar
-        return ColumnsMixin.rows(self, request)
+        # Sin TRLs: usar TechnologyRowSerializer para devolver nombres en lugar de IDs
+        qs = self.filter_queryset(
+            self.get_queryset().prefetch_related("fom_type", "targeted_programmes")
+        )
+        
+        # Validar columnas solicitadas
+        serializer = TechnologyRowSerializer()
+        allowed = set(serializer.fields.keys())
+        invalid = [c for c in requested if c not in allowed]
+        if invalid:
+            return Response(
+                {"detail": "Invalid columns", "invalid": invalid,
+                    "allowed": sorted(list(allowed))},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        # Siempre incluir 'id' si no está en la solicitud
+        if "id" in allowed and "id" not in requested:
+            requested = ["id"] + requested
+        
+        # Serializar con solo las columnas solicitadas
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = TechnologyRowSerializer(page, many=True, only_fields=requested)
+            data = serializer.data
+            # Filtrar solo las columnas solicitadas en cada fila
+            filtered_data = [
+                {k: v for k, v in row.items() if k in requested}
+                for row in data
+            ]
+            return self.get_paginated_response(filtered_data)
+        
+        serializer = TechnologyRowSerializer(qs, many=True, only_fields=requested)
+        data = serializer.data
+        # Filtrar solo las columnas solicitadas en cada fila
+        filtered_data = [
+            {k: v for k, v in row.items() if k in requested}
+            for row in data
+        ]
+        return Response(filtered_data)
 
     @action(detail=False, methods=["GET"], url_path="list-simple")
     def list_simple(self, request):
@@ -315,7 +353,7 @@ class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
     GET /technologies/rows/<pk>/?columns=technology_name,product_domains,current_trl,...
     Returns ONLY the requested columns for a specific row.
     """
-    queryset = Technology.objects.all()
+    queryset = Technology.objects.prefetch_related('fom_type', 'targeted_programmes').all()
     serializer_class = TechnologyRowSerializer
     lookup_field = "pk"
     
@@ -325,12 +363,12 @@ class TechnologyRowDetailView(ColumnsMixin, RetrieveAPIView):
         tmp_serializer = self.get_serializer()
         available = set(tmp_serializer.fields.keys())
         
-        only_field = parse_and_validate_columns(request, available)
+        only_fields = parse_and_validate_columns(request, available)
         
-        if not only_field:
+        if not only_fields:
             serializer = self.get_serializer(instance)
         else:
-            serializer = self.get_serializer(instance, only_field=only_field)
+            serializer = self.get_serializer(instance, only_fields=only_fields)
         
         return Response(serializer.data)
 

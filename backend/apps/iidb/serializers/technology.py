@@ -187,8 +187,27 @@ class TechnologyWithTRLsSerializer(TechnologySerializer):
         """
         Partimos de la representación normal y añadimos las columnas
         trlX_year / trlX_cost calculadas en un solo sitio.
+        También convertimos los IDs de ForeignKey/ManyToManyField a nombres.
         """
         data = super().to_representation(instance)
+
+        # Convertir ForeignKeys a nombres
+        if 'physical_technology_cluster' in data and data['physical_technology_cluster']:
+            data['physical_technology_cluster'] = instance.physical_technology_cluster.name if instance.physical_technology_cluster else None
+        if 'digital_technology_cluster' in data and data['digital_technology_cluster']:
+            data['digital_technology_cluster'] = instance.digital_technology_cluster.name if instance.digital_technology_cluster else None
+        if 'product_roadmap' in data and data['product_roadmap']:
+            data['product_roadmap'] = instance.product_roadmap.name if instance.product_roadmap else None
+        if 'technology_roadmap' in data and data['technology_roadmap']:
+            data['technology_roadmap'] = instance.technology_roadmap.name if instance.technology_roadmap else None
+        if 'ac_application' in data and data['ac_application']:
+            data['ac_application'] = instance.ac_application.name if instance.ac_application else None
+        
+        # Convertir ManyToManyFields a listas de nombres
+        if 'fom_type' in data:
+            data['fom_type'] = [fom_type.name for fom_type in instance.fom_type.all()] if instance.fom_type.exists() else []
+        if 'targeted_programmes' in data:
+            data['targeted_programmes'] = [programme.name for programme in instance.targeted_programmes.all()] if instance.targeted_programmes.exists() else []
 
         # Construimos un diccionario {trl_number: trl} una sola vez
         trls_by_number = {trl.trl_number: trl for trl in instance.trls.all()}
@@ -201,6 +220,15 @@ class TechnologyWithTRLsSerializer(TechnologySerializer):
         return data
 
 class TechnologyRowSerializer(serializers.ModelSerializer):
+    # Campos personalizados para devolver nombres en lugar de IDs
+    physical_technology_cluster = serializers.SerializerMethodField()
+    digital_technology_cluster = serializers.SerializerMethodField()
+    product_roadmap = serializers.SerializerMethodField()
+    technology_roadmap = serializers.SerializerMethodField()
+    ac_application = serializers.SerializerMethodField()
+    fom_type = serializers.SerializerMethodField()
+    targeted_programmes = serializers.SerializerMethodField()
+    
     class Meta:
         model = Technology
         fields = "__all__"
@@ -214,6 +242,27 @@ class TechnologyRowSerializer(serializers.ModelSerializer):
             for f in list(self.fields.keys()):
                 if f not in keep:
                     self.fields.pop(f)
+    
+    def get_physical_technology_cluster(self, obj):
+        return obj.physical_technology_cluster.name if obj.physical_technology_cluster else None
+    
+    def get_digital_technology_cluster(self, obj):
+        return obj.digital_technology_cluster.name if obj.digital_technology_cluster else None
+    
+    def get_product_roadmap(self, obj):
+        return obj.product_roadmap.name if obj.product_roadmap else None
+    
+    def get_technology_roadmap(self, obj):
+        return obj.technology_roadmap.name if obj.technology_roadmap else None
+    
+    def get_ac_application(self, obj):
+        return obj.ac_application.name if obj.ac_application else None
+    
+    def get_fom_type(self, obj):
+        return [fom_type.name for fom_type in obj.fom_type.all()] if obj.fom_type.exists() else []
+    
+    def get_targeted_programmes(self, obj):
+        return [programme.name for programme in obj.targeted_programmes.all()] if obj.targeted_programmes.exists() else []
 
 class TRLSerializer(serializers.ModelSerializer):
     trl_number = serializers.IntegerField(label=_("TRL Number"), required=True)
