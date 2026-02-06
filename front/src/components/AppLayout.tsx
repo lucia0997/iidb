@@ -4,6 +4,9 @@ import { routeConfig } from '../router/routeConfig';
 import { MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+// Altura fija del header en rem (medida real del AppHeader)
+const HEADER_HEIGHT_REM = 4;
+
 function AppLayout() {
   const { status } = useAuth();
   const { t, i18n } = useTranslation('login')
@@ -14,9 +17,24 @@ function AppLayout() {
     { value: 'fr', label: 'Français', icon: 'fr' },
     { value: 'de', label: 'Deutsch', icon: 'de' },
   ];
+
   return (
-    <div>
-      <header>
+    <div
+      style={{
+        minHeight: '100vh',
+        paddingTop: `${HEADER_HEIGHT_REM}rem`,
+      }}
+    >
+      <header
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1100,
+          height: `${HEADER_HEIGHT_REM}rem`,
+        }}
+      >
         <AppHeader
           structure={routeConfig}
           appName={t('template')}
@@ -34,7 +52,12 @@ function AppLayout() {
           // )}
         />
       </header>
-      <main>
+      <main
+        style={{
+          height: `calc(100vh - ${HEADER_HEIGHT_REM}rem)`,
+          overflow: 'auto',
+        }}
+      >
         <Outlet />
       </main>
     </div>

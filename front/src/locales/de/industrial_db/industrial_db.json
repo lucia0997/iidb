@@ -1,0 +1,15 @@
+{
+  "title": "Industriedatenbank-Mapping",
+  "selectParametersToVisualize": "Parameter zur Visualisierung Auswählen:",
+  "parameterSelected": "{{count}} Parameter ausgewählt",
+  "parametersSelected": "{{count}} Parameter ausgewählt",
+  "clearAll": "Alle löschen",
+  "applyFilters": "Filter Anwenden",
+  "reset": "Zurücksetzen",
+  "plantsProgrammes": "Werke / Programme",
+  "technologies": "Technologien",
+  "strategies": "Strategien",
+  "processes": "Prozesse",
+  "projects": "Projekte"
+}
+

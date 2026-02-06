@@ -2,6 +2,7 @@ import { Box, Tooltip } from '@mui/material';
 import { Button, IconButton, Typography } from '@airbus/components-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './industrialDB.css';
 import { FacetConfig, FacetKey, FacetState, SelectedByTable } from './IndustrialDB.types';
 import { useProgrammeOptions } from '../../hooks/PlantsProgrammes/useProgrammeOptions';
@@ -12,41 +13,42 @@ import { useProjectsOptions } from '../../hooks/Projects/useProjectsOptions';
 import { useStrategiesOptions } from '../../hooks/Strategies/useStrategiesOptions';
 import { ClearAll } from '@mui/icons-material';
 
-const FACETS_CONFIG: FacetConfig[] = [
-  {
-    key: 'plants_programme',
-    title: 'Plants / Programmes',
-    useOptionsHook: useProgrammeOptions,
-    color: '#a51890',
-  },
-  {
-    key: 'technologies',
-    title: 'Technologies',
-    useOptionsHook: useTechnologies,
-    color: '#e4022b',
-  },
-  {
-    key: 'processes',
-    title: 'Processes',
-    useOptionsHook: useProcessesOptions,
-    color: '#0285ad',
-  },
-  {
-    key: 'projects',
-    title: 'Projects',
-    useOptionsHook: useProjectsOptions,
-    color: '#ffbf00',
-  },
-  {
-    key: 'strategies',
-    title: 'Strategies',
-    useOptionsHook: useStrategiesOptions,
-    color: '#83be00',
-  },
-];
-
 const IndustrialDB = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('industrial_db');
+
+  const FACETS_CONFIG: FacetConfig[] = [
+    {
+      key: 'plants_programme',
+      title: t('plantsProgrammes'),
+      useOptionsHook: useProgrammeOptions,
+      color: '#a51890',
+    },
+    {
+      key: 'technologies',
+      title: t('technologies'),
+      useOptionsHook: useTechnologies,
+      color: '#e4022b',
+    },
+    {
+      key: 'processes',
+      title: t('processes'),
+      useOptionsHook: useProcessesOptions,
+      color: '#0285ad',
+    },
+    {
+      key: 'projects',
+      title: t('projects'),
+      useOptionsHook: useProjectsOptions,
+      color: '#ffbf00',
+    },
+    {
+      key: 'strategies',
+      title: t('strategies'),
+      useOptionsHook: useStrategiesOptions,
+      color: '#83be00',
+    },
+  ];
 
   const [facets, setFacets] = useState<FacetState>({
     plants_programme: [],
@@ -115,19 +117,19 @@ const IndustrialDB = () => {
   }, [canApply, navigate, selectedKeys]);
 
   const headerInfo = useMemo(
-    () => (selectedCount === 1 ? '1 parameter selected' : `${selectedCount} parameters selected`),
-    [selectedCount]
+    () => (selectedCount === 1 ? t('parameterSelected', { count: selectedCount }) : t('parametersSelected', { count: selectedCount })),
+    [selectedCount, t]
   );
 
   return (
     <Box className="industrialDBContainer">
       <Typography variant="h2" align="center">
-        Industrial Database Mapping
+        {t('title')}
       </Typography>
 
       <Box className="infoContainer">
         <Typography variant="h6" className="tableSelect">
-          Select Parameters to be visualized:
+          {t('selectParametersToVisualize')}
         </Typography>
         {selectedCount > 0 ? (
           <Box className="headerInfo">
@@ -135,7 +137,7 @@ const IndustrialDB = () => {
               {headerInfo}
             </Typography>
             <Tooltip
-              title="Clear all"
+              title={t('clearAll')}
               slotProps={{
                 popper: {
                   modifiers: [
@@ -154,7 +156,7 @@ const IndustrialDB = () => {
               </IconButton>
             </Tooltip>
             <Button type="button" onClick={handleApply} disabled={!canApply} className="applyBtn">
-              Apply Filters
+              {t('applyFilters')}
             </Button>
           </Box>
         ) : (
@@ -183,10 +185,10 @@ const IndustrialDB = () => {
       </Box>
       <Box className="footerBtns">
         <Button type="button" onClick={reset} className="resetBtn">
-          Reset
+          {t('reset')}
         </Button>
         <Button type="button" onClick={handleApply} disabled={!canApply} className="applyBtn">
-          Apply Filters
+          {t('applyFilters')}
         </Button>
       </Box>
     </Box>

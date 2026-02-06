@@ -16,6 +16,9 @@ const IndustrialDB = lazy(() => import('../pages/IndustrialDB/IndustrialDB'));
 const Project = lazy(() => import('../pages/Project/Project'));
 const ResultsTable = lazy(() => import('../components/Features/ResultsTable/ResultsTable'))
 const CreateDB = lazy(() => import('../pages/CreateDB/CreateDB'))
+const TechnologyMenu = lazy(() => import('../pages/CreateDB/TechnologyMenu'))
+const CreateTechnologyPage = lazy(() => import('../pages/CreateDB/CreateTechnologyPage'))
+const EditTechnologyPage = lazy(() => import('../pages/CreateDB/EditTechnologyPage'))
 
 export default function AppRoutes() {
   return (
@@ -32,6 +35,10 @@ export default function AppRoutes() {
         <Route path="/industrial-database/view" element={<ResultsTable />} />
         <Route path="/project-roadmapping" element={<Project />} />
         <Route path="/create-database" element={<CreateDB />} />
+        <Route path="/create-database/technology" element={<TechnologyMenu />} />
+        <Route path="/create-database/technology/new" element={<CreateTechnologyPage />} />
+        <Route path="/create-database/technology/edit" element={<EditTechnologyPage />} />
+        <Route path="/create-database/technology/edit/:id" element={<EditTechnologyPage />} />
         <Route
           path="/admin"
           element={

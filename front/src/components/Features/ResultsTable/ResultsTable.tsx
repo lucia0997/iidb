@@ -55,12 +55,45 @@ const ResultsTable = () => {
   }, [tablesToShow]);
 
   const normalizedByTable = useMemo(() => {
+    // Column defs y keys por tabla, con lógica especial para tecnologías + TRLs
     return tablesToShow.reduce(
       (acc, tableKey) => {
         const cols = selectedByTable[tableKey]?.columns ?? [];
-        const normalizedCols: ColObj[] = cols.map((c) =>
+
+        let normalizedCols: ColObj[] = cols.map((c) =>
           typeof c === 'string' ? { key: c, label: c } : c
         );
+
+        // Si en tecnologías se ha seleccionado "TRLs" como columna,
+        // expandimos a todas las columnas TRL year/cost.
+        if (tableKey === 'technologies') {
+          const hasTrls = normalizedCols.some((c) => c.key === 'trls');
+          if (hasTrls) {
+            normalizedCols = [
+              // mantenemos el resto de columnas seleccionadas que no sean 'trls'
+              ...normalizedCols.filter((c) => c.key !== 'trls'),
+              // añadimos todas las columnas TRL (años y costes)
+              { key: 'trl1_year', label: 'TRL1 Year' },
+              { key: 'trl1_cost', label: 'TRL1 Cost' },
+              { key: 'trl2_year', label: 'TRL2 Year' },
+              { key: 'trl2_cost', label: 'TRL2 Cost' },
+              { key: 'trl3_year', label: 'TRL3 Year' },
+              { key: 'trl3_cost', label: 'TRL3 Cost' },
+              { key: 'trl4_year', label: 'TRL4 Year' },
+              { key: 'trl4_cost', label: 'TRL4 Cost' },
+              { key: 'trl5_year', label: 'TRL5 Year' },
+              { key: 'trl5_cost', label: 'TRL5 Cost' },
+              { key: 'trl6_year', label: 'TRL6 Year' },
+              { key: 'trl6_cost', label: 'TRL6 Cost' },
+              { key: 'trl7_year', label: 'TRL7 Year' },
+              { key: 'trl7_cost', label: 'TRL7 Cost' },
+              { key: 'trl8_year', label: 'TRL8 Year' },
+              { key: 'trl8_cost', label: 'TRL8 Cost' },
+              { key: 'trl9_year', label: 'TRL9 Year' },
+              { key: 'trl9_cost', label: 'TRL9 Cost' },
+            ];
+          }
+        }
 
         acc[tableKey] = {
           cols: normalizedCols,
@@ -119,7 +152,31 @@ const ResultsTable = () => {
         const { cols } = normalizedByTable[tableKey];
         const q = queries[idx];
 
-        const columnDefs: MRT_ColumnDef<Row>[] = cols.map(({ key, label }) => ({
+        const rows = q.data?.rows ?? [];
+        const rowCount = q.data?.count ?? 0;
+
+        // Filtrar columnas TRL: solo mostrar las que tienen al menos un valor no-null
+        const visibleCols = useMemo(() => {
+          if (tableKey !== 'technologies' || rows.length === 0) {
+            return cols;
+          }
+
+          // Identificar columnas TRL (trlX_year, trlX_cost)
+          const trlCols = cols.filter((c) => /^trl\d+_(year|cost)$/.test(c.key));
+          const nonTrlCols = cols.filter((c) => !/^trl\d+_(year|cost)$/.test(c.key));
+
+          // Para cada columna TRL, verificar si tiene al menos un valor no-null
+          const trlColsWithData = trlCols.filter((col) => {
+            return rows.some((row) => {
+              const value = row[col.key];
+              return value != null && value !== '';
+            });
+          });
+
+          return [...nonTrlCols, ...trlColsWithData];
+        }, [cols, rows, tableKey]);
+
+        const columnDefs: MRT_ColumnDef<Row>[] = visibleCols.map(({ key, label }) => ({
           accessorKey: String(key),
           header: String(label ?? key),
           size: 200,
@@ -131,9 +188,6 @@ const ResultsTable = () => {
             return String(value)
           }
         }));
-
-        const rows = q.data?.rows ?? [];
-        const rowCount = q.data?.count ?? 0;
 
         return (
           <Box key={tableKey} className="tableContainer">

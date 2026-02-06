@@ -1,0 +1,15 @@
+{
+  "title": "Mapeo de Base de Datos Industrial",
+  "selectParametersToVisualize": "Selecciona Parámetros para Visualizar:",
+  "parameterSelected": "{{count}} parámetro seleccionado",
+  "parametersSelected": "{{count}} parámetros seleccionados",
+  "clearAll": "Limpiar todo",
+  "applyFilters": "Aplicar Filtros",
+  "reset": "Restablecer",
+  "plantsProgrammes": "Plantas / Programas",
+  "technologies": "Tecnologías",
+  "strategies": "Estrategias",
+  "processes": "Procesos",
+  "projects": "Proyectos"
+}
+

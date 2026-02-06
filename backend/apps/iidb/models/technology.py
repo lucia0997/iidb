@@ -27,28 +27,149 @@ class TRL(models.Model):
         return f"TRL {self.trl_number}"
 
 
+class PhysicalTechnologyCluster(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "physical_technology_clusters"
+        verbose_name = _("Physical Technology Cluster")
+        verbose_name_plural = _("Physical Technology Clusters")
+
+    def __str__(self):
+        return self.name
+
+
+class DigitalTechnologyCluster(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "digital_technology_clusters"
+        verbose_name = _("Digital Technology Cluster")
+        verbose_name_plural = _("Digital Technology Clusters")
+
+    def __str__(self):
+        return self.name
+
+
+class ProductRoadmap(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "product_roadmaps"
+        verbose_name = _("Product Roadmap")
+        verbose_name_plural = _("Product Roadmaps")
+
+    def __str__(self):
+        return self.name
+
+
+class TechnologyRoadmap(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "technology_roadmaps"
+        verbose_name = _("Technology Roadmap")
+        verbose_name_plural = _("Technology Roadmaps")
+
+    def __str__(self):
+        return self.name
+
+
+class FoMType(models.Model):
+    name = models.CharField(max_length=100, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "fom_types"
+        verbose_name = _("FoM Type")
+        verbose_name_plural = _("FoM Types")
+
+    def __str__(self):
+        return self.name
+
+
+class TargetedProgramme(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "targeted_programmes"
+        verbose_name = _("Targeted Programme")
+        verbose_name_plural = _("Targeted Programmes")
+
+    def __str__(self):
+        return self.name
+
+
+class ACApplication(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+
+    class Meta:
+        db_table = "ac_applications"
+        verbose_name = _("A/C Application")
+        verbose_name_plural = _("A/C Applications")
+
+    def __str__(self):
+        return self.name
+
+
 class Technology(models.Model):
-    physical_technology_cluster = models.CharField(
-        max_length=255,
+    physical_technology_cluster = models.ForeignKey(
+        'PhysicalTechnologyCluster',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='technologies',
         verbose_name=_("Physical Technology Cluster"),
-        blank=True,
     )
-    digital_technology_cluster = models.CharField(
-        max_length=255,
+    digital_technology_cluster = models.ForeignKey(
+        'DigitalTechnologyCluster',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='technologies',
         verbose_name=_("Digital Technology Cluster"),
-        blank=True,
     )
-    product_domains = models.CharField(max_length=255, verbose_name=_("Product Domains"), blank=True)
-    technology_domains = models.CharField(max_length=255, verbose_name=_("Technology Domains"), blank=True)
+    product_roadmap = models.ForeignKey(
+        'ProductRoadmap',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='technologies',
+        verbose_name=_("Product Roadmap"),
+    )
+    technology_roadmap = models.ForeignKey(
+        'TechnologyRoadmap',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='technologies',
+        verbose_name=_("Technology Roadmap"),
+    )
     technology_name = models.CharField(max_length=255, unique=True, verbose_name=_("Technology Name"))
     technology_description = models.TextField(verbose_name=_("Technology Description"), blank=True)
     current_trl = models.PositiveSmallIntegerField(verbose_name=_("Current TRL (1-9)"), choices=TRLLevel.choices, null=True, blank=True)
     trls = models.ManyToManyField(TRL, through="TechnologyTRL", related_name="technologies", verbose_name=_("TRLs"), blank=True)
-    tech_cluster_dependencies = models.JSONField(default=list, verbose_name=_("Tech. Cluster Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
-    fom_type = models.CharField(max_length=100, verbose_name=_("FoM Type"), blank=True)    
+    dependencies = models.JSONField(default=list, verbose_name=_("Dependencies"), help_text=_("Same list of values as Technology Cluster"), blank=True)
+    fom_type = models.ManyToManyField(
+        'FoMType',
+        blank=True,
+        related_name='technologies',
+        verbose_name=_("FoM Type"),
+    )
     fom_value_percent = models.DecimalField(verbose_name=_("FoM Value (%)"), max_digits=5, decimal_places=2, null=True, blank=True)
-    targeted_programmes = models.JSONField(default=list, verbose_name=_("Targeted Programmes"), help_text=_("List of targeted programmes (same taxonomy as PlantProgrammes.program)"), blank=True)
-    ac_application = models.CharField(max_length=255, verbose_name=_("A/C Application"), blank=True)
+    targeted_programmes = models.ManyToManyField(
+        'TargetedProgramme',
+        blank=True,
+        related_name='technologies',
+        verbose_name=_("Targeted Programmes"),
+    )
+    ac_application = models.ForeignKey(
+        'ACApplication',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='technologies',
+        verbose_name=_("A/C Application"),
+    )
     
     class Meta:
         db_table = "technologies"

@@ -1,0 +1,74 @@
+.createDBContainer {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Altura del header de la aplicación (debe coincidir con HEADER_HEIGHT_REM en AppLayout.tsx) */
+:root {
+  --header-height: 4rem;
+}
+
+.createDBSection {
+  background: white;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  /* Altura: 100vh - header app - padding del contenedor (1.5rem arriba + 1.5rem abajo) */
+  height: calc(100vh - var(--header-height) - 3rem);
+  max-height: calc(100vh - var(--header-height) - 3rem);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.createTechnologyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.createTechnologyContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Custom scrollbar styling */
+.createTechnologyContainer > div[style*="overflow"] {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.createTechnologyContainer > div[style*="overflow"]::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Make Select wider in EditTechnologyPage */
+.createDBSection [class*="FormControl"] {
+  width: 100% !important;
+  min-width: 600px !important;
+}
+
+.createDBSection [class*="Select"] {
+  width: 100% !important;
+}
+
